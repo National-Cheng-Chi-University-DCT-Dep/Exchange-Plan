@@ -1,0 +1,99 @@
+pipeline:
+  name: "Exchange Application Pipeline - Debug"
+  identifier: "exchange_application_pipeline_debug"
+  projectIdentifier: "exchange_plan"
+  orgIdentifier: "default"
+  tags: 
+    system: "exchange-application"
+    version: "1.0.0-debug"
+  
+  properties:
+    ci:
+      codebase:
+        connectorRef: "github_connector"
+        repoName: "Exchange-Plan"
+        build: <+input>
+
+  stages:
+    - stage:
+        name: "Debug Environment"
+        identifier: "debug"
+        description: "Debug directory structure and file locations"
+        type: "CI"
+        spec:
+          cloneCodebase: true
+          platform:
+            os: "Linux"
+            arch: "Amd64"
+          runtime:
+            type: "Cloud"
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: "Run"
+                  name: "Directory Debug"
+                  identifier: "debug_dirs"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      echo "🔍 Debugging directory structure..."
+                      
+                      echo "Current working directory: $(pwd)"
+                      echo ""
+                      echo "Directory contents:"
+                      ls -la
+                      echo ""
+                      
+                      echo "Looking for Exchange-Plan directory:"
+                      if [ -d "Exchange-Plan" ]; then
+                        echo "✅ Found Exchange-Plan directory"
+                        echo "Exchange-Plan contents:"
+                        ls -la Exchange-Plan/
+                        echo ""
+                        echo "Checking for my_profile.yml in Exchange-Plan:"
+                        if [ -f "Exchange-Plan/my_profile.yml" ]; then
+                          echo "✅ Found my_profile.yml in Exchange-Plan/"
+                        else
+                          echo "❌ my_profile.yml not found in Exchange-Plan/"
+                        fi
+                      else
+                        echo "❌ Exchange-Plan directory not found"
+                      fi
+                      echo ""
+                      
+                      echo "Searching for my_profile.yml in current directory:"
+                      if [ -f "my_profile.yml" ]; then
+                        echo "✅ Found my_profile.yml in current directory"
+                      else
+                        echo "❌ my_profile.yml not found in current directory"
+                      fi
+                      echo ""
+                      
+                      echo "Searching for all .yml files:"
+                      find . -name "*.yml" -type f 2>/dev/null || echo "No .yml files found"
+                      echo ""
+                      
+                      echo "Searching for source_data directory:"
+                      if [ -d "source_data" ]; then
+                        echo "✅ Found source_data directory in current location"
+                        ls -la source_data/
+                      elif [ -d "Exchange-Plan/source_data" ]; then
+                        echo "✅ Found source_data directory in Exchange-Plan/"
+                        ls -la Exchange-Plan/source_data/
+                      else
+                        echo "❌ source_data directory not found"
+                        echo "Searching for source_data directories:"
+                        find . -name "source_data" -type d 2>/dev/null || echo "No source_data directories found"
+                      fi
+                      echo ""
+                      
+                      echo "Environment variables:"
+                      echo "HOME: $HOME"
+                      echo "PWD: $PWD"
+                      echo "PATH: $PATH"
+                      echo ""
+                      
+                      echo "Git information:"
+                      git status 2>/dev/null || echo "Not a git repository"
+                      git remote -v 2>/dev/null || echo "No git remotes"
