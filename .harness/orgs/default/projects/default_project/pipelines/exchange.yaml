@@ -1,0 +1,342 @@
+pipeline:
+  name: Exchange Application Pipeline
+  identifier: exchange_application_pipeline
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags:
+    system: exchange-application
+    version: 1.0.0
+  properties:
+    ci:
+      codebase:
+        connectorRef: github_connector
+        repoName: Exchange-Plan
+        build: <+input>
+  stages:
+    - stage:
+        name: Environment Setup
+        identifier: setup
+        description: Setup Python environment and install dependencies
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: System Information
+                  identifier: system_info
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🔧 Exchange Application System Setup"
+                      echo "Date: $(date)"
+                      echo "Python version: $(python3 --version)"
+                      echo "Pip version: $(pip3 --version)"
+                      echo "Git commit: $(git rev-parse --short HEAD)"
+              - step:
+                  type: Run
+                  name: Install Dependencies
+                  identifier: install_deps
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "📦 Installing Python dependencies..."
+
+                      # Install core dependencies
+                      pip3 install --upgrade pip
+                      pip3 install PyYAML
+
+                      echo "✅ Dependencies installed"
+
+                      echo "📋 Installed packages:"
+                      pip3 list | grep -E "(PyYAML)"
+    - stage:
+        name: Validation and Generation
+        identifier: validation_generation
+        description: Validate eligibility and generate application documents
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Validate Configuration
+                  identifier: validate_config
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🔍 Validating system configuration..."
+
+                      # Check if required files exist
+                      if [ ! -f "my_profile.yml" ]; then
+                        echo "❌ my_profile.yml not found"
+                        exit 1
+                      fi
+
+                      if [ ! -f "source_data/university_level_options.yml" ]; then
+                        echo "❌ university_level_options.yml not found"
+                        exit 1
+                      fi
+
+                      if [ ! -f "source_data/college_level_options.yml" ]; then
+                        echo "❌ college_level_options.yml not found"
+                        exit 1
+                      fi
+
+                      # Validate YAML syntax
+                      python3 -c "import yaml; yaml.safe_load(open('my_profile.yml'))"
+                      echo "✅ my_profile.yml is valid"
+
+                      python3 -c "import yaml; yaml.safe_load(open('source_data/university_level_options.yml'))"
+                      echo "✅ university_level_options.yml is valid"
+
+                      python3 -c "import yaml; yaml.safe_load(open('source_data/college_level_options.yml'))"
+                      echo "✅ college_level_options.yml is valid"
+              - step:
+                  type: Run
+                  name: Run Eligibility Validation
+                  identifier: run_validation
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "✅ Starting eligibility validation..."
+
+                      export PYTHONPATH="${PYTHONPATH}:$(pwd)"
+
+                      echo "🔍 Running application eligibility validator..."
+                      python3 intelligence_gathering/validator.py
+
+                      # Check validation results
+                      if [ -f "final_applications/eligibility_report.md" ]; then
+                        echo "✅ Validation completed successfully"
+                        echo "📊 Validation summary:"
+                        head -20 final_applications/eligibility_report.md
+                      else
+                        echo "❌ Validation failed"
+                        exit 1
+                      fi
+              - step:
+                  type: Run
+                  name: Generate Application Documents
+                  identifier: generate_docs
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "📝 Generating customized application documents..."
+
+                      export PYTHONPATH="${PYTHONPATH}:$(pwd)"
+
+                      echo "📝 Running document generator..."
+                      python3 build_scripts/generate_docs.py
+
+                      # Document generation summary
+                      echo "📊 Document Generation Summary:"
+                      find final_applications -name "*_study_plan_*.md" | wc -l | xargs echo "  Study plans generated:"
+                      find final_applications -name "*_cv_*.md" | wc -l | xargs echo "  CV documents generated:"
+
+                      if [ -f "final_applications/dashboard.md" ]; then
+                        echo "✅ Dashboard generated successfully"
+                      else
+                        echo "❌ Dashboard generation failed"
+                        exit 1
+                      fi
+    - stage:
+        name: Quality Check and Notification
+        identifier: quality_notification
+        description: Quality check and success notification
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Quality Check
+                  identifier: quality_check
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🔍 Running quality checks..."
+
+                      # Check if required files exist
+                      if [ ! -f "final_applications/eligibility_report.md" ]; then
+                        echo "❌ 資格報告未生成"
+                        exit 1
+                      fi
+
+                      if [ ! -f "final_applications/dashboard.md" ]; then
+                        echo "❌ 儀表板未生成"
+                        exit 1
+                      fi
+
+                      # Count generated documents
+                      doc_count=$(find final_applications -name "*_study_plan_*.md" | wc -l)
+                      echo "已生成 $doc_count 份讀書計畫"
+
+                      if [ $doc_count -eq 0 ]; then
+                        echo "❌ 未生成任何申請文件"
+                        exit 1
+                      fi
+
+                      echo "✅ 文件完整性檢查通過"
+              - step:
+                  type: Run
+                  name: Success Notification
+                  identifier: success_notification
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "=========================================="
+                      echo "交換申請文件生成完成！"
+                      echo "=========================================="
+                      echo "生成時間: $(date)"
+                      echo "文件位置: final_applications/"
+                      echo "儀表板: final_applications/dashboard.md"
+                      echo ""
+                      echo "下一步建議:"
+                      echo "1. 檢查各校申請截止日期"
+                      echo "2. 準備英語檢定成績"
+                      echo "3. 聯繫推薦人撰寫推薦信"
+                      echo ""
+                      echo "---"
+                      echo "此通知由 ExchangeApp-IAC 自動發送"
+                      echo "=========================================="
+    - stage:
+        name: Artifact Management
+        identifier: artifacts
+        description: Save and organize generated artifacts
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Organize Generated Files
+                  identifier: organize_files
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "📁 Organizing generated artifacts..."
+
+                      # Create artifacts directory
+                      mkdir -p artifacts/reports artifacts/documents
+
+                      # Copy reports
+                      if [ -f "final_applications/eligibility_report.md" ]; then
+                        cp final_applications/eligibility_report.md artifacts/reports/
+                        echo "✅ Eligibility report archived"
+                      fi
+
+                      if [ -f "final_applications/dashboard.md" ]; then
+                        cp final_applications/dashboard.md artifacts/reports/
+                        echo "✅ Dashboard archived"
+                      fi
+
+                      # Copy application documents
+                      find final_applications -name "*.md" -path "*/*" | while read file; do
+                        if [ -f "$file" ]; then
+                          cp "$file" artifacts/documents/
+                        fi
+                      done
+
+                      # Create manifest
+                      cat > artifacts/MANIFEST.txt << EOF
+                      Exchange Application Pipeline
+                      Generated: $(date)
+                      Commit: $(git rev-parse --short HEAD)
+                      Pipeline ID: <+pipeline.sequenceId>
+
+                      Files Generated:
+                      EOF
+
+                      find artifacts -type f | sort >> artifacts/MANIFEST.txt
+
+                      echo "📊 Artifact Summary:"
+                      echo "  Reports: $(ls artifacts/reports/*.md 2>/dev/null | wc -l)"
+                      echo "  Documents: $(ls artifacts/documents/*.md 2>/dev/null | wc -l)"
+  variables:
+    - name: profile_file
+      type: String
+      description: Profile configuration file
+      value: my_profile.yml
+    - name: output_directory
+      type: String
+      description: Output directory for generated files
+      value: final_applications
+    - name: template_directory
+      type: String
+      description: Template directory
+      value: templates
+  notificationRules:
+    - name: Pipeline Success Notification
+      identifier: success_notification
+      pipelineEvents:
+        - type: PipelineSuccess
+      notificationMethod:
+        type: Email
+        spec:
+          userGroups: []
+          recipients:
+            - admin@dennisleehappy.org
+          subject: ✅ Exchange Application Pipeline Completed Successfully
+          body: |
+            The Exchange Application Pipeline has completed successfully.
+
+            Pipeline ID: <+pipeline.sequenceId>
+            Execution Time: <+pipeline.startTs>
+            Commit: <+codebase.commitSha>
+
+            Generated documents are available in the final_applications directory.
+
+            Best regards,
+            ExchangeApp-IAC System
+      enabled: true
+    - name: Pipeline Failure Notification
+      identifier: failure_notification
+      pipelineEvents:
+        - type: PipelineFailed
+      notificationMethod:
+        type: Email
+        spec:
+          userGroups: []
+          recipients:
+            - admin@dennisleehappy.org
+          subject: ❌ Exchange Application Pipeline Failed
+          body: |
+            The Exchange Application Pipeline has failed.
+
+            Pipeline ID: <+pipeline.sequenceId>
+            Failed Stage: <+pipeline.stage.name>
+
+            Please check the pipeline logs for detailed error information.
+
+            Best regards,
+            ExchangeApp-IAC System
+      enabled: true
