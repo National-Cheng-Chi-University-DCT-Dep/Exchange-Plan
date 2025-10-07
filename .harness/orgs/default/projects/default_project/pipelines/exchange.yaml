@@ -111,21 +111,54 @@ pipeline:
                     shell: Bash
                     command: |
                       echo "Generating application documents..."
+                      echo "Current directory: $(pwd)"
                       export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 
+                      # Check if generator script exists
                       if [ -f "build_scripts/generate_docs.py" ]; then
+                        echo "Found document generator script"
+                        
+                        # Create final_applications directory if it doesn't exist
+                        mkdir -p final_applications
+                        echo "Ensured final_applications directory exists"
+                        
+                        echo ""
                         echo "Running document generator..."
                         python3 build_scripts/generate_docs.py
                         
-                        study_plans=$(find final_applications -name "*_study_plan_*.md" 2>/dev/null | wc -l)
-                        cv_docs=$(find final_applications -name "*_cv_*.md" 2>/dev/null | wc -l)
-                        echo "Generated: $study_plans study plans, $cv_docs CV documents"
-                        
-                        if [ -f "final_applications/dashboard.md" ]; then
-                          echo "Dashboard generated successfully"
+                        echo ""
+                        echo "Checking generated files..."
+                        if [ -d "final_applications" ]; then
+                          echo "final_applications directory exists"
+                          
+                          # Count documents
+                          study_plans=$(find final_applications -name "*_study_plan_*.md" 2>/dev/null | wc -l)
+                          cv_docs=$(find final_applications -name "*_cv_*.md" 2>/dev/null | wc -l)
+                          all_files=$(find final_applications -type f 2>/dev/null | wc -l)
+                          
+                          echo "Generated: $study_plans study plans, $cv_docs CV documents"
+                          echo "Total files in final_applications: $all_files"
+                          
+                          # Show directory structure
+                          echo ""
+                          echo "Directory structure:"
+                          find final_applications -type f | head -20
+                          
+                          # Check for dashboard
+                          if [ -f "final_applications/dashboard.md" ]; then
+                            echo ""
+                            echo "Dashboard generated successfully"
+                          else
+                            echo ""
+                            echo "WARNING: Dashboard not generated"
+                          fi
+                        else
+                          echo "ERROR: final_applications directory not created"
                         fi
                       else
-                        echo "Document generator not found, skipping generation"
+                        echo "ERROR: Document generator not found at build_scripts/generate_docs.py"
+                        echo "Available build_scripts files:"
+                        ls -la build_scripts/ 2>/dev/null || echo "build_scripts directory not found"
                       fi
     - stage:
         name: Quality Check and Save Results
@@ -176,20 +209,41 @@ pipeline:
                   spec:
                     shell: Bash
                     command: |
-                      echo "Committing generated files to GitHub..."
+                      echo "Preparing to commit generated files to GitHub..."
+
+                      # Debug: Show current directory and contents
+                      echo "Current directory: $(pwd)"
+                      echo "Directory contents:"
+                      ls -la
+
+                      # Search for final_applications directory
+                      echo ""
+                      echo "Searching for final_applications directory..."
+                      find . -name "final_applications" -type d 2>/dev/null || echo "No final_applications directory found"
+
+                      # Search for any generated .md files
+                      echo ""
+                      echo "Searching for generated markdown files..."
+                      find . -name "*.md" -path "*/final_applications/*" -type f 2>/dev/null | head -10 || echo "No markdown files found in final_applications"
 
                       # Configure git
                       git config user.email "harness-pipeline@dennisleehappy.org"
                       git config user.name "Harness Pipeline Bot"
 
                       # Check if there are files to commit
-                      if [ -d "final_applications" ]; then
+                      if [ -d "final_applications" ] && [ "$(ls -A final_applications 2>/dev/null)" ]; then
+                        echo ""
+                        echo "Found final_applications directory with content!"
+                        echo "Files to commit:"
+                        find final_applications -type f | head -20
+                        
                         # Add all generated files
                         git add final_applications/
                         
                         # Check if there are changes
                         if git diff --staged --quiet; then
-                          echo "No changes to commit"
+                          echo ""
+                          echo "No changes to commit (files already exist in repository)"
                         else
                           # Commit with timestamp
                           TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
@@ -205,15 +259,38 @@ pipeline:
                           - Study plans and CVs for qualified universities"
                           
                           # Push to GitHub
+                          echo ""
                           echo "Pushing to GitHub..."
                           git push origin HEAD:<+codebase.branch>
                           
+                          echo ""
                           echo "Successfully pushed generated documents to GitHub!"
                           echo "Branch: <+codebase.branch>"
                           echo "Commit: $(git rev-parse --short HEAD)"
                         fi
                       else
-                        echo "No final_applications directory found, nothing to commit"
+                        echo ""
+                        echo "WARNING: No final_applications directory found or directory is empty"
+                        echo "This means the document generation step may have failed"
+                        echo "Please check the previous pipeline steps for errors"
+                        
+                        # Still try to create a summary of what we have
+                        echo ""
+                        echo "Creating execution summary..."
+                        mkdir -p pipeline_logs
+                        echo "Pipeline Execution Summary" > pipeline_logs/execution_summary.txt
+                        echo "==========================" >> pipeline_logs/execution_summary.txt
+                        echo "Pipeline ID: <+pipeline.sequenceId>" >> pipeline_logs/execution_summary.txt
+                        echo "Execution Time: <+pipeline.startTs>" >> pipeline_logs/execution_summary.txt
+                        echo "Status: Completed but no documents generated" >> pipeline_logs/execution_summary.txt
+                        echo "" >> pipeline_logs/execution_summary.txt
+                        echo "Current Directory: $(pwd)" >> pipeline_logs/execution_summary.txt
+                        echo "Issue: final_applications directory not found or empty" >> pipeline_logs/execution_summary.txt
+                        echo "Recommendation: Check validator.py and generate_docs.py execution logs" >> pipeline_logs/execution_summary.txt
+                        
+                        git add pipeline_logs/
+                        git commit -m "docs: Pipeline execution log - no documents generated" || echo "Nothing to commit"
+                        git push origin HEAD:<+codebase.branch> || echo "Push failed or nothing to push"
                       fi
               - step:
                   type: Run
