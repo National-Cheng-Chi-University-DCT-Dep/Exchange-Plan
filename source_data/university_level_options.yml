@@ -1,0 +1,124 @@
+# 校級交換機會清單
+# 根據政大國際事務處(OIC)簡章手動整理
+
+universities:
+  # 美國
+  - school_name: "University of California, Berkeley"
+    country: "United States"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 7.0
+    toefl_requirement: 90
+    slots_available: 2
+    official_info_url: "https://example.com/berkeley-info"
+    notable_courses:
+      - "CS 162: Operating Systems"
+      - "CS 189: Machine Learning"
+      - "CS 294: Advanced Topics in Computer Systems"
+    application_status: "Not Started"
+    predicted_competition_score: 9
+    notes: "Highly competitive, requires strong academic record"
+
+  - school_name: "Massachusetts Institute of Technology"
+    country: "United States"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 7.0
+    toefl_requirement: 90
+    slots_available: 1
+    official_info_url: "https://example.com/mit-info"
+    notable_courses:
+      - "6.824: Distributed Systems"
+      - "6.858: Computer Systems Security"
+      - "6.883: Interpretability and Analysis in Deep Learning"
+    application_status: "Not Started"
+    predicted_competition_score: 10
+    notes: "Extremely competitive, world-renowned program"
+
+  # 英國
+  - school_name: "University of Cambridge"
+    country: "United Kingdom"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 7.5
+    slots_available: 1
+    official_info_url: "https://example.com/cambridge-info"
+    notable_courses:
+      - "Computer Security"
+      - "Advanced Topics in Machine Learning"
+      - "Quantum Computing"
+    application_status: "Not Started"
+    predicted_competition_score: 10
+    notes: "Prestigious university, high language requirement"
+
+  - school_name: "University of Oxford"
+    country: "United Kingdom"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 7.5
+    slots_available: 1
+    official_info_url: "https://example.com/oxford-info"
+    notable_courses:
+      - "Advanced Computer Science"
+      - "Machine Learning"
+      - "Cybersecurity"
+    application_status: "Not Started"
+    predicted_competition_score: 10
+    notes: "World-class reputation, very competitive"
+
+  # 德國
+  - school_name: "Technical University of Munich"
+    country: "Germany"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 6.5
+    german_requirement: "B2"
+    slots_available: 3
+    official_info_url: "https://example.com/tum-info"
+    notable_courses:
+      - "Advanced Computer Security"
+      - "Quantum Computing"
+      - "Machine Learning in Cybersecurity"
+    application_status: "Not Started"
+    predicted_competition_score: 7
+    notes: "Strong engineering program, requires German proficiency"
+
+  # 荷蘭
+  - school_name: "Delft University of Technology"
+    country: "Netherlands"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 6.5
+    slots_available: 2
+    official_info_url: "https://example.com/tudelft-info"
+    notable_courses:
+      - "Advanced Computer Security"
+      - "Quantum Computing"
+      - "Cybersecurity Engineering"
+    application_status: "Not Started"
+    predicted_competition_score: 6
+    notes: "Excellent technical university, English-taught programs"
+
+  # 愛沙尼亞
+  - school_name: "Tallinn University of Technology (TalTech)"
+    country: "Estonia"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 6.5
+    slots_available: 4
+    official_info_url: "https://example.com/taltech-info"
+    notable_courses:
+      - "ITC8240: Cryptography"
+      - "ITC8210: Network Security"
+      - "ITC8200: Quantum Computing"
+    application_status: "Not Started"
+    predicted_competition_score: 5
+    notes: "NATO-backed cybersecurity program, less competitive"
+
+  # 加拿大
+  - school_name: "University of Toronto"
+    country: "Canada"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 6.5
+    slots_available: 2
+    official_info_url: "https://example.com/utoronto-info"
+    notable_courses:
+      - "CSC 209: Software Tools and Systems Programming"
+      - "CSC 488: Computer Graphics"
+      - "CSC 2090: Quantum Computing"
+    application_status: "Not Started"
+    predicted_competition_score: 8
+    notes: "Strong computer science program, research opportunities"

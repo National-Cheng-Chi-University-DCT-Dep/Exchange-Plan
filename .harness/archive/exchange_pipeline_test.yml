@@ -1,0 +1,83 @@
+pipeline:
+  name: "Exchange Application Pipeline - Test"
+  identifier: "exchange_application_pipeline_test"
+  projectIdentifier: "exchange_plan"
+  orgIdentifier: "default"
+  tags: 
+    system: "exchange-application"
+    version: "1.0.0-test"
+  
+  properties:
+    ci:
+      codebase:
+        connectorRef: "github_connector"
+        repoName: "Exchange-Plan"
+        build: <+input>
+
+  stages:
+    - stage:
+        name: "Simple Test"
+        identifier: "simple_test"
+        description: "Simple file location test"
+        type: "CI"
+        spec:
+          cloneCodebase: true
+          platform:
+            os: "Linux"
+            arch: "Amd64"
+          runtime:
+            type: "Cloud"
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: "Run"
+                  name: "File Location Test"
+                  identifier: "file_test"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      echo "🔍 Simple file location test..."
+                      
+                      echo "Current directory: $(pwd)"
+                      echo "Directory contents:"
+                      ls -la
+                      
+                      echo ""
+                      echo "Checking for specific files:"
+                      
+                      # Check my_profile.yml
+                      if [ -f "my_profile.yml" ]; then
+                        echo "✅ my_profile.yml found"
+                      else
+                        echo "❌ my_profile.yml not found"
+                      fi
+                      
+                      # Check source_data directory
+                      if [ -d "source_data" ]; then
+                        echo "✅ source_data directory found"
+                        echo "source_data contents:"
+                        ls -la source_data/
+                        
+                        # Check specific files in source_data
+                        if [ -f "source_data/university_level_options.yml" ]; then
+                          echo "✅ university_level_options.yml found"
+                        else
+                          echo "❌ university_level_options.yml not found"
+                        fi
+                        
+                        if [ -f "source_data/college_level_options.yml" ]; then
+                          echo "✅ college_level_options.yml found"
+                        else
+                          echo "❌ college_level_options.yml not found"
+                        fi
+                      else
+                        echo "❌ source_data directory not found"
+                      fi
+                      
+                      echo ""
+                      echo "All .yml files:"
+                      find . -name "*.yml" -type f 2>/dev/null || echo "No .yml files found"
+                      
+                      echo ""
+                      echo "Test completed successfully!"

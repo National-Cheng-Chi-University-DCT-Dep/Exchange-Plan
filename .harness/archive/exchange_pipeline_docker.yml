@@ -1,0 +1,156 @@
+# Harness Pipeline 配置檔案 (Docker 版本)
+# 交換申請自動化流程
+
+pipeline:
+  name: "Exchange Application Pipeline"
+  identifier: "exchange_application_pipeline"
+  description: "自動化交換申請文件生成與資格驗證流程"
+  
+  # Pipeline 階段
+  stages:
+    - stage:
+        name: "Validate and Generate"
+        identifier: "validate_and_generate"
+        type: "CI"
+        description: "驗證資格並生成申請文件"
+        
+        spec:
+          # 基礎設施配置 - 使用 Docker
+          infrastructure:
+            type: "Docker"
+            spec:
+              connectorRef: "account.harnessImage"
+              image: "python:3.11-slim"
+              platform:
+                os: "Linux"
+                arch: "Amd64"
+              privileged: false
+              runAsUser: "1000"
+        
+          execution:
+            steps:
+              - step:
+                  name: "Setup Environment"
+                  identifier: "setup_env"
+                  type: "Run"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      # 更新套件管理器
+                      apt-get update
+                      
+                      # 安裝必要的系統套件
+                      apt-get install -y git curl
+                      
+                      # 檢查Python環境
+                      python3 --version
+                      pip3 --version
+                      
+                      # 安裝Python依賴套件
+                      pip3 install pyyaml
+                      
+              - step:
+                  name: "Run Eligibility Validation"
+                  identifier: "run_validation"
+                  type: "Run"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      # 執行資格驗證腳本
+                      python3 intelligence_gathering/validator.py
+                      
+              - step:
+                  name: "Generate Application Documents"
+                  identifier: "generate_docs"
+                  type: "Run"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      # 執行文件生成腳本
+                      python3 build_scripts/generate_docs.py
+                      
+              - step:
+                  name: "Quality Check"
+                  identifier: "quality_check"
+                  type: "Run"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      # 檢查生成的文件是否完整
+                      
+                      # 檢查必要檔案是否存在
+                      if [ ! -f "final_applications/eligibility_report.md" ]; then
+                        echo "資格報告未生成"
+                        exit 1
+                      fi
+                      
+                      if [ ! -f "final_applications/dashboard.md" ]; then
+                        echo "儀表板未生成"
+                        exit 1
+                      fi
+                      
+                      # 計算生成的申請文件數量
+                      doc_count=$(find final_applications -name "*_study_plan_*.md" | wc -l)
+                      echo "已生成 $doc_count 份讀書計畫"
+                      
+                      if [ $doc_count -eq 0 ]; then
+                        echo "未生成任何申請文件"
+                        exit 1
+                      fi
+                      
+                      echo "文件完整性檢查通過"
+                      
+              - step:
+                  name: "Success Notification"
+                  identifier: "success_notification"
+                  type: "Run"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      # 發送完成通知
+                      echo "=========================================="
+                      echo "交換申請文件生成完成！"
+                      echo "=========================================="
+                      echo "生成時間: $(date)"
+                      echo "文件位置: final_applications/"
+                      echo "儀表板: final_applications/dashboard.md"
+                      echo ""
+                      echo "下一步建議:"
+                      echo "1. 檢查各校申請截止日期"
+                      echo "2. 準備英語檢定成績"
+                      echo "3. 聯繫推薦人撰寫推薦信"
+                      echo ""
+                      echo "---"
+                      echo "此通知由 ExchangeApp-IAC 自動發送"
+                      echo "=========================================="
+        
+        failureStrategies:
+          - onFailure:
+              errors:
+                - "AllErrors"
+              action:
+                type: "Ignore"
+                spec: {}
+
+  # Pipeline 變數
+  variables:
+    - name: "profile_file"
+      type: "String"
+      value: "my_profile.yml"
+      
+    - name: "output_directory"
+      type: "String"
+      value: "final_applications"
+      
+    - name: "template_directory"
+      type: "String"
+      value: "templates"
+
+  # 失敗策略
+  failureStrategies:
+    - onFailure:
+        errors:
+          - "AllErrors"
+        action:
+          type: "Ignore"
+          spec: {}

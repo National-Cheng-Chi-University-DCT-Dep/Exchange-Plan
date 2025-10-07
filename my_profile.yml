@@ -1,12 +1,11 @@
 # 個人申請條件檔案 - 李沛宸 (Pei-Chen Lee)
 # 此檔案包含交換申請所需的所有個人條件和背景資料
-# 最後更新：2025-10-07
 
 # ==================== 基本資料 ====================
 personal_info:
   name: "李沛宸 (Pei-Chen Lee)"
   english_name: "Pei-Chen Lee"
-  student_id: "110462011"  # 政大學號
+  student_id: "110462011"  # 政大學號 (需要確認)
   current_status: "Graduate Student"
   email: "admin@dennisleehappy.org"
   phone: "+886 909 258 032"
@@ -21,7 +20,7 @@ education:
     program: "Digital Content and Technologies"
     degree_type: "Graduate Coursework"
     start_date: "Sept 2021"
-    end_date: "Present"
+    end_date: "June 2023"
     gpa: 3.96
     max_gpa: 4.3
     gpa_percentage: 92.09  # 3.96/4.3 * 100
