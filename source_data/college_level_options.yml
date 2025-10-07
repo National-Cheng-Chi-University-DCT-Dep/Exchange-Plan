@@ -1,0 +1,132 @@
+# 院級交換機會清單
+# 根據政大傳播學院簡章手動整理
+
+universities:
+  # 美國
+  - school_name: "Stanford University"
+    country: "United States"
+    college: "School of Engineering"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 7.0
+    toefl_requirement: 100
+    slots_available: 1
+    official_info_url: "https://example.com/stanford-info"
+    notable_courses:
+      - "CS 229: Machine Learning"
+      - "CS 255: Introduction to Cryptography"
+      - "CS 294: Advanced Topics in Computer Systems"
+    application_status: "Not Started"
+    predicted_competition_score: 10
+    notes: "World-renowned engineering school, extremely competitive"
+
+  - school_name: "Carnegie Mellon University"
+    country: "United States"
+    college: "School of Computer Science"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 7.0
+    toefl_requirement: 90
+    slots_available: 1
+    official_info_url: "https://example.com/cmu-info"
+    notable_courses:
+      - "15-440: Distributed Systems"
+      - "15-441: Computer Networks"
+      - "15-445: Database Systems"
+    application_status: "Not Started"
+    predicted_competition_score: 9
+    notes: "Top computer science program, strong in cybersecurity"
+
+  # 英國
+  - school_name: "Imperial College London"
+    country: "United Kingdom"
+    college: "Department of Computing"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 7.0
+    slots_available: 2
+    official_info_url: "https://example.com/imperial-info"
+    notable_courses:
+      - "Advanced Computer Security"
+      - "Machine Learning"
+      - "Quantum Computing"
+    application_status: "Not Started"
+    predicted_competition_score: 8
+    notes: "Strong technical focus, excellent reputation"
+
+  - school_name: "University College London"
+    country: "United Kingdom"
+    college: "Department of Computer Science"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 6.5
+    slots_available: 2
+    official_info_url: "https://example.com/ucl-info"
+    notable_courses:
+      - "COMP0021: Machine Learning"
+      - "COMP0023: Computer Security"
+      - "COMP0025: Advanced Topics in Machine Learning"
+    application_status: "Not Started"
+    predicted_competition_score: 7
+    notes: "Good program, moderate competition"
+
+  # 德國
+  - school_name: "RWTH Aachen University"
+    country: "Germany"
+    college: "Faculty of Mathematics, Computer Science and Natural Sciences"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 6.0
+    german_requirement: "B1"
+    slots_available: 3
+    official_info_url: "https://example.com/rwth-info"
+    notable_courses:
+      - "Advanced Computer Security"
+      - "Cryptography"
+      - "Quantum Computing"
+    application_status: "Not Started"
+    predicted_competition_score: 6
+    notes: "Strong engineering tradition, requires German"
+
+  # 荷蘭
+  - school_name: "Eindhoven University of Technology"
+    country: "Netherlands"
+    college: "Department of Mathematics and Computer Science"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 6.5
+    slots_available: 2
+    official_info_url: "https://example.com/tue-info"
+    notable_courses:
+      - "2IMC00: Advanced Computer Security"
+      - "2IMC10: Machine Learning"
+      - "2IMC20: Quantum Computing"
+    application_status: "Not Started"
+    predicted_competition_score: 5
+    notes: "Excellent technical university, English programs"
+
+  # 瑞士
+  - school_name: "ETH Zurich"
+    country: "Switzerland"
+    college: "Department of Computer Science"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 7.0
+    slots_available: 1
+    official_info_url: "https://example.com/ethz-info"
+    notable_courses:
+      - "Advanced Computer Security"
+      - "Machine Learning"
+      - "Quantum Computing"
+    application_status: "Not Started"
+    predicted_competition_score: 9
+    notes: "World-class technical university, highly competitive"
+
+  # 瑞典
+  - school_name: "KTH Royal Institute of Technology"
+    country: "Sweden"
+    college: "School of Electrical Engineering and Computer Science"
+    internal_deadline: "2024-12-31"
+    ielts_requirement: 6.5
+    slots_available: 2
+    official_info_url: "https://example.com/kth-info"
+    notable_courses:
+      - "Advanced Computer Security"
+      - "Machine Learning"
+      - "Quantum Computing"
+    application_status: "Not Started"
+    predicted_competition_score: 6
+    notes: "Strong technical program, moderate competition"

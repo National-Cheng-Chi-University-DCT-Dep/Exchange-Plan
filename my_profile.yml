@@ -1,0 +1,379 @@
+# 個人申請條件檔案 - 李沛宸 (Pei-Chen Lee)
+# 此檔案包含交換申請所需的所有個人條件和背景資料
+
+# ==================== 基本資料 ====================
+personal_info:
+  name: "李沛宸 (Pei-Chen Lee)"
+  english_name: "Pei-Chen Lee"
+  student_id: "109753001"  # 政大學號 (需要確認)
+  current_status: "Graduate Student"
+  email: "admin@dennisleehappy.org"
+  phone: "+886 909 258 032"
+  portfolio: "https://www.dennisleehappy.org/"
+  linkedin: "https://www.linkedin.com/in/pei-chen-lee-4a3a352a2/"
+  github: "https://github.com/dennislee928"
+
+# ==================== 學歷背景 ====================
+education:
+  current_program:
+    university: "National Chengchi University (NCCU)"
+    program: "Digital Content and Technologies"
+    degree_type: "Graduate Coursework"
+    start_date: "Sept 2021"
+    end_date: "June 2023"
+    gpa: 3.96
+    max_gpa: 4.3
+    gpa_percentage: 92.09  # 3.96/4.3 * 100
+    class_ranking: "Top 5%"
+    
+  undergraduate:
+    university: "National Chengchi University (NCCU)"
+    program: "Management Information Systems"
+    degree_type: "Bachelor of Science"
+    start_date: "Sept 2015"
+    end_date: "June 2020"
+
+# ==================== 語言能力 ====================
+language_proficiency:
+  chinese:
+    level: "Native"
+    
+  english:
+    ielts:
+      overall_score: null  # 需要更新實際分數
+      listening: null
+      reading: null
+      writing: null
+      speaking: null
+      test_date: null
+      valid_until: null
+    
+    toefl:
+      total_score: null  # 備用選項
+      test_date: null
+      
+    toeic:
+      score: null  # 備用選項
+      test_date: null
+      
+    self_assessment:
+      reading: "Advanced"
+      writing: "Advanced"
+      listening: "Advanced"
+      speaking: "Intermediate-Advanced"
+
+# ==================== 已修課程 ====================
+completed_courses:
+  graduate_courses:
+    - course_code: "DC501"
+      course_name: "Advanced Programming"
+      credits: 3
+      grade: "A"
+      semester: "Fall 2021"
+      
+    - course_code: "DC502"
+      course_name: "Data Structures"
+      credits: 3
+      grade: "A"
+      semester: "Fall 2021"
+      
+    - course_code: "DC503"
+      course_name: "Software Engineering"
+      credits: 3
+      grade: "A"
+      semester: "Spring 2022"
+      
+    - course_code: "DC504"
+      course_name: "Digital Content Management"
+      credits: 3
+      grade: "A"
+      semester: "Spring 2022"
+
+  undergraduate_courses:
+    - course_code: "MIS301"
+      course_name: "Database Systems"
+      credits: 3
+      grade: "A"
+      semester: "Fall 2017"
+      
+    - course_code: "MIS302"
+      course_name: "Information Security"
+      credits: 3
+      grade: "A"
+      semester: "Spring 2018"
+      
+    - course_code: "MIS303"
+      course_name: "System Analysis and Design"
+      credits: 3
+      grade: "A"
+      semester: "Fall 2018"
+
+# ==================== 專業技能 ====================
+technical_skills:
+  programming_languages:
+    - name: "Golang"
+      level: "Advanced"
+      years_experience: 3
+      
+    - name: "Python"
+      level: "Advanced"
+      years_experience: 5
+      
+    - name: "JavaScript/TypeScript"
+      level: "Expert"
+      years_experience: 5
+      
+    - name: "SQL"
+      level: "Advanced"
+      years_experience: 4
+      
+    - name: "Bash"
+      level: "Intermediate"
+      years_experience: 3
+
+  cloud_platforms:
+    - name: "AWS"
+      level: "Advanced"
+      certifications: ["AWS Certified Cloud Practitioner"]
+      
+    - name: "GCP"
+      level: "Advanced"
+      
+    - name: "Cloudflare"
+      level: "Expert"
+      certifications: ["ACE", "ASE", "MSP"]
+
+  security_expertise:
+    - "Zero Trust Architecture"
+    - "WAF Configuration"
+    - "DDoS Mitigation"
+    - "IAM Management"
+    - "Penetration Testing"
+    - "SIEM Tools (Splunk, Axiom)"
+
+  frameworks_tools:
+    - "Node.js (Express, NestJS)"
+    - "React (Next.js)"
+    - "Vue.js (Nuxt.js)"
+    - "Docker & Kubernetes"
+    - "Terraform"
+    - "GitHub Actions"
+
+# ==================== 專業證照 ====================
+certifications:
+  - name: "Certified in Cybersecurity (CC)"
+    issuer: "ISC²"
+    year: 2024
+    status: "Active"
+    category: "Security"
+    
+  - name: "AWS Certified Cloud Practitioner"
+    issuer: "Amazon Web Services"
+    year: 2023
+    status: "Active"
+    category: "Cloud"
+    
+  - name: "Oracle Cloud Infrastructure Foundations Associate"
+    issuer: "Oracle"
+    year: 2023
+    status: "Active"
+    category: "Cloud"
+    
+  - name: "Cloudflare Certified Engineer (ACE, ASE, MSP)"
+    issuer: "Cloudflare"
+    year: 2023
+    status: "Active"
+    category: "Security"
+    
+  - name: "Prisma Cloud Certified Engineer"
+    issuer: "Palo Alto Networks"
+    year: 2023
+    status: "Active"
+    category: "Security"
+    
+  - name: "Machine Learning"
+    issuer: "Stanford University"
+    year: 2023
+    status: "Completed"
+    category: "AI/ML"
+    
+  - name: "Network Automation Engineering"
+    issuer: "Cisco"
+    year: 2023
+    status: "Completed"
+    category: "Network"
+    
+  - name: "IBM Quantum Computing & Qiskit"
+    issuer: "IBM"
+    year: 2023
+    status: "Completed"
+    category: "Quantum"
+
+# ==================== 工作經驗 ====================
+professional_experience:
+  current_position:
+    title: "Cybersecurity Developer"
+    company: "MITAKE Information Co., Ltd."
+    location: "Taipei, Taiwan"
+    start_date: "Sept 2024"
+    end_date: "Present"
+    key_achievements:
+      - "Led end-to-end integration of hardware security key (HPkey)"
+      - "Developed firmware for ESP32-based hardware components"
+      - "Established secure software development lifecycle (SSDLC)"
+      - "Designed in-house penetration testing laboratory"
+    technologies: ["C/C++", "ESP32", "Git Security Scanning", "CI/CD", "Penetration Testing"]
+
+  previous_positions:
+    - title: "Cybersecurity Consultant / Development Leader"
+      company: "Twister5"
+      location: "Taipei, Taiwan"
+      start_date: "Sept 2023"
+      end_date: "May 2024"
+      key_achievements:
+        - "Led critical infrastructure protection projects for TWSE, Cathay Financial"
+        - "Engineered automated DNS and WAF solutions"
+        - "Architected Business Decision Engine (BDE) with Next.js/R3F"
+        - "Orchestrated PoC for quantum computing integration with IBM"
+      clients: ["Taiwan Armed Forces Medical Bureau", "Cathay Financial Holdings", "Taiwan Stock Exchange", "ITRI"]
+      
+    - title: "Frontend Web / Cloud Developer"
+      company: "Bityacht"
+      location: "Taipei, Taiwan"
+      start_date: "Oct 2023"
+      end_date: "May 2024"
+      key_achievements:
+        - "Led migration to GCP with GitHub Actions CI/CD"
+        - "Implemented Cloudflare Zero Trust security"
+        - "Patched 30+ NPM supply-chain vulnerabilities"
+      technologies: ["GCP", "GitHub Actions", "Cloudflare Zero Trust"]
+
+# ==================== 研究經驗 ====================
+research_experience:
+  - title: "Research Assistant"
+    organization: "NCCU Innovation Incubation Center"
+    location: "Taipei, Taiwan"
+    start_date: "Sept 2021"
+    end_date: "June 2023"
+    description: "Developed educational games using Unity engine and managed App Store publishing pipeline"
+    technologies: ["Unity", "C#", "Mobile App Development"]
+    
+  - title: "Research Assistant"
+    organization: "NCCU Innovation Incubation Center"
+    location: "Taipei, Taiwan"
+    start_date: "Oct 2019"
+    end_date: "June 2020"
+    description: "Built 'Help You Out,' a parent-teacher communication tool"
+
+# ==================== 獲獎記錄 ====================
+awards_honors:
+  - name: "Selected Appointee, HIS Engineer"
+    organization: "TaiwanICDF"
+    year: 2024
+    description: "Somaliland Mission - International Development"
+    
+  - name: "Meta Hackathon Reward"
+    organization: "Meta (Facebook)"
+    year: 2023
+    description: "Competitive programming and innovation"
+    
+  - name: "Graduate Student Scholarship"
+    organization: "NCCU"
+    year: 2023
+    description: "Academic excellence recognition"
+    
+  - name: "Featured Artist"
+    organization: "NCCU Art Center"
+    year: 2023
+    description: "NFT Creation Exhibition - Bridged crypto technology and artistic expression"
+    
+  - name: "Best Popularity Award"
+    organization: "NCCU"
+    year: 2020
+    description: "Graduation Project Competition"
+
+# ==================== 交換申請偏好 ====================
+exchange_preferences:
+  target_countries:
+    - "United States"
+    - "United Kingdom"
+    - "Germany"
+    - "Netherlands"
+    - "Estonia"
+    - "Canada"
+    
+  target_programs:
+    - "Cybersecurity"
+    - "Computer Science"
+    - "Information Technology"
+    - "Digital Security"
+    - "Quantum Computing"
+    
+  duration_preference: "1 semester"  # 或 "1 year"
+  
+  language_requirement_tolerance:
+    english_only: true
+    other_languages: false
+    
+  academic_level:
+    graduate: true
+    undergraduate: false
+
+# ==================== 申請文件狀態 ====================
+application_documents:
+  cv:
+    status: "Ready"
+    last_updated: "2024-12-19"
+    file_path: "國外碩士申請資料/履歷 (CV ).md"
+    
+  sop:
+    status: "In Progress"
+    last_updated: "2024-12-19"
+    file_path: "國外碩士申請資料/sop/TalTech.md"
+    
+  transcripts:
+    status: "Ready"
+    last_updated: "2024-12-19"
+    file_path: "國外碩士申請資料/成績單/"
+    
+  recommendation_letters:
+    status: "Pending"
+    last_updated: null
+    file_path: "國外碩士申請資料/推薦信.md"
+    
+  language_certificates:
+    status: "Pending"
+    last_updated: null
+    note: "需要準備IELTS或其他英語檢定成績"
+    
+  portfolio:
+    status: "Ready"
+    last_updated: "2024-12-19"
+    url: "https://www.dennisleehappy.org/"
+
+# ==================== 特殊條件 ====================
+special_considerations:
+  military_service:
+    status: "Completed"  # 或 "Deferred", "Exempt"
+    completion_date: null
+    
+  financial_aid_need:
+    required: true
+    note: "需要獎學金或財務補助"
+    
+  health_conditions:
+    has_conditions: false
+    notes: null
+    
+  accessibility_needs:
+    has_needs: false
+    notes: null
+
+# ==================== 備註 ====================
+notes:
+  - "具有豐富的網路安全實務經驗，曾服務於台灣證券交易所等關鍵基礎設施"
+  - "具備多項國際認證，包括ISC²、AWS、Cloudflare等"
+  - "對量子計算和AI安全有濃厚興趣"
+  - "需要更新英語檢定成績（IELTS）"
+  - "具有跨文化合作經驗（日本巡演）"
+  - "GitHub活躍度：https://github.com/dennislee928"

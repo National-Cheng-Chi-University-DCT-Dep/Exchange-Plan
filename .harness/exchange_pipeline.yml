@@ -1,0 +1,261 @@
+# Harness Pipeline 配置檔案
+# 交換申請自動化流程
+
+pipeline:
+  name: "Exchange Application Pipeline"
+  identifier: "exchange_application_pipeline"
+  description: "自動化交換申請文件生成與資格驗證流程"
+  
+  # 觸發條件
+  triggers:
+    - name: "Manual Trigger"
+      identifier: "manual_trigger"
+      type: "Manual"
+      description: "手動觸發申請文件生成"
+      
+    - name: "Options Update Trigger"
+      identifier: "options_update_trigger"
+      type: "Webhook"
+      description: "當options.yml檔案更新時觸發"
+      webhook:
+        path: "webhook/options-updated"
+        method: "POST"
+  
+  # Pipeline 階段
+  stages:
+    - stage:
+        name: "Validate Eligibility"
+        identifier: "validate_eligibility"
+        type: "CI"
+        description: "驗證申請資格"
+        
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: "Setup Python Environment"
+                  identifier: "setup_python"
+                  type: "Run"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      # 檢查Python環境
+                      python3 --version
+                      pip3 --version
+                      
+                      # 安裝必要套件
+                      pip3 install pyyaml
+                      
+              - step:
+                  name: "Run Eligibility Validation"
+                  identifier: "run_validation"
+                  type: "Run"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      # 執行資格驗證腳本
+                      cd /harness
+                      python3 intelligence_gathering/validator.py
+                      
+                  output_variables:
+                    - name: "eligibility_report_path"
+                      value: "final_applications/eligibility_report.md"
+              
+              - step:
+                  name: "Publish Eligibility Report"
+                  identifier: "publish_report"
+                  type: "Artifacts"
+                  spec:
+                    source:
+                      type: "Gcr"
+                      spec:
+                        connectorRef: "harnessImage"
+                        imagePath: "final_applications/eligibility_report.md"
+    
+    - stage:
+        name: "Generate Documents"
+        identifier: "generate_documents"
+        type: "CI"
+        description: "生成客製化申請文件"
+        dependsOn:
+          - "validate_eligibility"
+        
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: "Generate Application Documents"
+                  identifier: "generate_docs"
+                  type: "Run"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      # 執行文件生成腳本
+                      cd /harness
+                      python3 build_scripts/generate_docs.py
+                      
+              - step:
+                  name: "Generate Dashboard"
+                  identifier: "generate_dashboard"
+                  type: "Run"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      # 更新儀表板
+                      cd /harness
+                      python3 build_scripts/generate_docs.py
+                      
+              - step:
+                  name: "Archive Generated Documents"
+                  identifier: "archive_docs"
+                  type: "Artifacts"
+                  spec:
+                    source:
+                      type: "Gcr"
+                      spec:
+                        connectorRef: "harnessImage"
+                        imagePath: "final_applications/"
+    
+    - stage:
+        name: "Quality Check"
+        identifier: "quality_check"
+        type: "CI"
+        description: "文件品質檢查"
+        dependsOn:
+          - "generate_documents"
+        
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: "Check Document Completeness"
+                  identifier: "check_completeness"
+                  type: "Run"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      # 檢查生成的文件是否完整
+                      cd /harness
+                      
+                      # 檢查必要檔案是否存在
+                      if [ ! -f "final_applications/eligibility_report.md" ]; then
+                        echo "❌ 資格報告未生成"
+                        exit 1
+                      fi
+                      
+                      if [ ! -f "final_applications/dashboard.md" ]; then
+                        echo "❌ 儀表板未生成"
+                        exit 1
+                      fi
+                      
+                      # 計算生成的申請文件數量
+                      doc_count=$(find final_applications -name "*_study_plan_*.md" | wc -l)
+                      echo "📄 已生成 $doc_count 份讀書計畫"
+                      
+                      if [ $doc_count -eq 0 ]; then
+                        echo "❌ 未生成任何申請文件"
+                        exit 1
+                      fi
+                      
+                      echo "✅ 文件完整性檢查通過"
+              
+              - step:
+                  name: "Validate Document Format"
+                  identifier: "validate_format"
+                  type: "Run"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      # 檢查文件格式
+                      cd /harness
+                      
+                      # 檢查Markdown語法
+                      for file in $(find final_applications -name "*.md"); do
+                        echo "檢查檔案: $file"
+                        # 簡單的Markdown檢查
+                        if ! grep -q "#" "$file"; then
+                          echo "⚠️  警告: $file 可能缺少標題"
+                        fi
+                      done
+                      
+                      echo "✅ 文件格式檢查完成"
+    
+    - stage:
+        name: "Notification"
+        identifier: "notification"
+        type: "CI"
+        description: "發送完成通知"
+        dependsOn:
+          - "quality_check"
+        
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: "Send Success Notification"
+                  identifier: "send_notification"
+                  type: "Email"
+                  spec:
+                    to: "admin@dennisleehappy.org"
+                    subject: "交換申請文件生成完成"
+                    body: |
+                      您的交換申請文件已成功生成！
+                      
+                      生成時間: $(date)
+                      文件位置: final_applications/
+                      儀表板: final_applications/dashboard.md
+                      
+                      請檢查生成的文件並根據需要進行調整。
+                      
+                      下一步建議:
+                      1. 檢查各校申請截止日期
+                      2. 準備英語檢定成績
+                      3. 聯繫推薦人撰寫推薦信
+                      
+                      ---
+                      此通知由 ExchangeApp-IAC 自動發送
+
+  # Pipeline 變數
+  variables:
+    - name: "profile_file"
+      type: "String"
+      value: "my_profile.yml"
+      
+    - name: "output_directory"
+      type: "String"
+      value: "final_applications"
+      
+    - name: "template_directory"
+      type: "String"
+      value: "templates"
+
+  # 失敗策略
+  failureStrategies:
+    - onFailure:
+        errors:
+          - "AllErrors"
+        action:
+          type: "Ignore"
+          spec: {}
+
+  # 通知設定
+  notificationRules:
+    - name: "Pipeline Success"
+      events:
+        - "Pipeline Success"
+      notificationMethod:
+        type: "Email"
+        spec:
+          recipients:
+            - "admin@dennisleehappy.org"
+          subject: "✅ 交換申請文件生成成功"
+    
+    - name: "Pipeline Failure"
+      events:
+        - "Pipeline Failure"
+      notificationMethod:
+        type: "Email"
+        spec:
+          recipients:
+            - "admin@dennisleehappy.org"
+          subject: "❌ 交換申請文件生成失敗"
