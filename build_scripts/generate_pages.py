@@ -1,0 +1,502 @@
+#!/usr/bin/env python3
+"""
+GitHub Pages 生成腳本
+將申請文件轉換為靜態網頁展示
+"""
+
+import yaml
+import os
+import sys
+import markdown
+from datetime import datetime
+from pathlib import Path
+import json
+
+# 專案根目錄
+PROJECT_ROOT = Path(__file__).parent.parent
+
+def load_profile():
+    """載入個人profile"""
+    profile_path = PROJECT_ROOT / "my_profile.yml"
+    with open(profile_path, 'r', encoding='utf-8') as f:
+        return yaml.safe_load(f)
+
+def generate_index_page(profile):
+    """生成首頁"""
+    print("生成首頁...")
+    
+    personal_info = profile['personal_info']
+    education = profile['education']['current_program']
+    ielts = profile['language_proficiency']['english']['ielts']
+    
+    # 計算統計數據
+    total_certs = len(profile['certifications'])
+    total_awards = len(profile['awards_honors'])
+    
+    html_content = f"""<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exchange Application System - {personal_info['english_name']}</title>
+    <meta name="description" content="Exchange student application management system">
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }}
+        
+        .container {{
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }}
+        
+        .header {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }}
+        
+        .header h1 {{
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }}
+        
+        .header p {{
+            font-size: 1.2em;
+            opacity: 0.9;
+        }}
+        
+        .stats {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }}
+        
+        .stat-card {{
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }}
+        
+        .stat-card:hover {{
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }}
+        
+        .stat-number {{
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }}
+        
+        .stat-label {{
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }}
+        
+        .content {{
+            padding: 40px;
+        }}
+        
+        .section {{
+            margin-bottom: 40px;
+        }}
+        
+        .section h2 {{
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }}
+        
+        .card {{
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }}
+        
+        .card h3 {{
+            color: #333;
+            margin-bottom: 10px;
+        }}
+        
+        .card p {{
+            color: #666;
+            margin-bottom: 8px;
+        }}
+        
+        .badge {{
+            display: inline-block;
+            padding: 5px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }}
+        
+        .button {{
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }}
+        
+        .button:hover {{
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }}
+        
+        .footer {{
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }}
+        
+        .progress-bar {{
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin: 10px 0;
+        }}
+        
+        .progress-fill {{
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 1s ease;
+        }}
+        
+        .timeline {{
+            position: relative;
+            padding-left: 30px;
+        }}
+        
+        .timeline::before {{
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #667eea;
+        }}
+        
+        .timeline-item {{
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 20px;
+        }}
+        
+        .timeline-item::before {{
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #667eea;
+        }}
+        
+        @media (max-width: 768px) {{
+            .header h1 {{
+                font-size: 1.8em;
+            }}
+            
+            .stats {{
+                grid-template-columns: 1fr;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Exchange Application System</h1>
+            <p>{personal_info['english_name']} - {education['university']}</p>
+            <p style="margin-top: 10px; font-size: 1em;">Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">{education['gpa']}/{education['max_gpa']}</div>
+                <div class="stat-label">GPA (Top {education['class_ranking']})</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{ielts['overall_score']}</div>
+                <div class="stat-label">IELTS Overall</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{total_certs}+</div>
+                <div class="stat-label">Certifications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{total_awards}</div>
+                <div class="stat-label">Awards & Honors</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>📋 Application Status</h2>
+                <div class="card">
+                    <h3>Overall Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 90%;"></div>
+                    </div>
+                    <p>System Integration: 90% Complete (18/20 tasks)</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Target Universities</h3>
+                    <p><span class="badge">1st Choice</span> University of Bern, Switzerland</p>
+                    <p><span class="badge">2nd Choice</span> UC San Diego, USA</p>
+                    <p><strong>Application Deadline:</strong> January 12, 2026</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>🎯 Key Strengths</h2>
+                <div class="card">
+                    <h3>Academic Excellence</h3>
+                    <p>GPA: {education['gpa']}/{education['max_gpa']} ({education['gpa_percentage']}%)</p>
+                    <p>Class Ranking: {education['class_ranking']}</p>
+                    <span class="badge">Graduate Scholarship 2023</span>
+                </div>
+                
+                <div class="card">
+                    <h3>Language Proficiency</h3>
+                    <p>IELTS: Overall {ielts['overall_score']} (L:{ielts['listening']} / R:{ielts['reading']} / W:{ielts['writing']} / S:{ielts['speaking']})</p>
+                    <span class="badge">Reading 9.0 Perfect Score</span>
+                </div>
+                
+                <div class="card">
+                    <h3>Professional Experience</h3>
+                    <p>5 years in Cybersecurity & Cloud Infrastructure</p>
+                    <span class="badge">MITAKE Info</span>
+                    <span class="badge">Twister5</span>
+                    <span class="badge">Bityacht</span>
+                </div>
+                
+                <div class="card">
+                    <h3>International Experience</h3>
+                    <p>Somaliland HIS Project - TaiwanICDF</p>
+                    <p>Japan Music Tour - Cross-cultural Collaboration</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>📂 Generated Documents</h2>
+                <div class="card">
+                    <h3>Application Templates</h3>
+                    <p>✅ CV Template (with GitHub highlights, NFT exhibition, awards)</p>
+                    <p>✅ Study Plan Template (University of Bern & UC San Diego)</p>
+                    <p>✅ Recommendation Request Template (with Brag Sheet)</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Supporting Documents</h3>
+                    <p>✅ Portfolio Highlights (GitHub: 2,500+ commits, 222 stars)</p>
+                    <p>✅ Scholarship Certificate</p>
+                    <p>✅ Campus Involvement Records</p>
+                    <p>✅ Transcripts (6 pages scanned)</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Automated Tools</h3>
+                    <p>✅ Document Generator Script</p>
+                    <p>✅ Application Checklist (12 categories)</p>
+                    <p>✅ Supporting Documents Index</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>📅 Timeline</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h3>Week 1-2: Preparation</h3>
+                        <p>Apply for official transcripts, select recommender, copy documents</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>Week 3-4: Document Generation</h3>
+                        <p>Generate CV and study plans, human review, find proofreading service</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>Week 5-6: Final Preparation</h3>
+                        <p>Collect recommendation letters, complete proofreading, fill application forms</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>Week 7: Submission</h3>
+                        <p>Final check, submit application (Deadline: Jan 12, 2026)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>🔗 Quick Links</h2>
+                <p>
+                    <a href="https://github.com/{os.getenv('GITHUB_REPOSITORY', 'dennislee928/Exchange-Plan')}" class="button" target="_blank">📂 GitHub Repository</a>
+                    <a href="https://www.dennisleehappy.org/" class="button" target="_blank">🌐 Personal Portfolio</a>
+                    <a href="https://github.com/dennislee928" class="button" target="_blank">💻 GitHub Profile</a>
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 Exchange Application System - {personal_info['english_name']}</p>
+            <p style="margin-top: 10px; opacity: 0.8;">Powered by GitHub Pages & GitHub Actions</p>
+            <p style="margin-top: 5px; font-size: 0.9em;">Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+    
+    # 寫入檔案
+    docs_dir = PROJECT_ROOT / "docs"
+    docs_dir.mkdir(exist_ok=True)
+    
+    index_file = docs_dir / "index.html"
+    with open(index_file, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    
+    print(f"✅ 首頁已生成: {index_file}")
+    return index_file
+
+def generate_documents_page():
+    """生成文件列表頁面"""
+    print("生成文件列表頁面...")
+    
+    final_apps_dir = PROJECT_ROOT / "final_applications"
+    docs_dir = PROJECT_ROOT / "docs"
+    
+    # 收集所有生成的文件
+    documents = []
+    if final_apps_dir.exists():
+        for md_file in final_apps_dir.rglob("*.md"):
+            rel_path = md_file.relative_to(final_apps_dir)
+            documents.append({
+                'name': md_file.name,
+                'path': str(rel_path),
+                'size': md_file.stat().st_size,
+                'modified': datetime.fromtimestamp(md_file.stat().st_mtime).strftime('%Y-%m-%d %H:%M:%S')
+            })
+    
+    # 生成HTML
+    docs_list = ""
+    for doc in sorted(documents, key=lambda x: x['name']):
+        docs_list += f"""
+        <div class="card">
+            <h3>{doc['name']}</h3>
+            <p><strong>Path:</strong> {doc['path']}</p>
+            <p><strong>Size:</strong> {doc['size']} bytes | <strong>Modified:</strong> {doc['modified']}</p>
+        </div>
+        """
+    
+    html_content = f"""<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Documents - Exchange Application</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 Generated Documents</h1>
+            <p>Total: {len(documents)} documents</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>Application Documents</h2>
+                {docs_list if docs_list else '<p>No documents generated yet. Run the generation script first.</p>'}
+            </div>
+            
+            <div class="section">
+                <p><a href="index.html" class="button">← Back to Dashboard</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+"""
+    
+    docs_page = docs_dir / "documents.html"
+    with open(docs_page, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    
+    print(f"✅ 文件列表頁面已生成: {docs_page}")
+
+def main():
+    """主函數"""
+    print("=" * 50)
+    print("GitHub Pages Generator")
+    print("=" * 50)
+    
+    try:
+        # 載入 profile
+        profile = load_profile()
+        print("✅ Profile loaded")
+        
+        # 生成首頁
+        generate_index_page(profile)
+        
+        # 生成文件列表頁
+        generate_documents_page()
+        
+        print("\n" + "=" * 50)
+        print("✅ GitHub Pages 生成完成！")
+        print("=" * 50)
+        print(f"📁 輸出目錄: {PROJECT_ROOT / 'docs'}")
+        print("🌐 部署後可在 GitHub Pages 查看")
+        
+    except Exception as e:
+        print(f"❌ 錯誤: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
+

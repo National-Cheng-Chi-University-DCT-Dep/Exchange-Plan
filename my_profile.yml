@@ -793,9 +793,10 @@ application_documents:
         source: "Exchange student/證照/certifications.docx"
         status: "Documented"
       awards:
-        - "獎學金證明"
-        - "NFT展覽"
-        - "畢業專題獎項"
+        list:
+          - "獎學金證明"
+          - "NFT展覽"
+          - "畢業專題獎項"
         status: "Ready"
       campus_involvement:
         source: "校園事務參與.png"

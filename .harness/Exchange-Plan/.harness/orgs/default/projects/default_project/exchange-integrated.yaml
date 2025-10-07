@@ -1,0 +1,304 @@
+pipeline:
+  name: Exchange Application Integrated Pipeline
+  identifier: exchange_application_integrated_pipeline
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags:
+    system: exchange-application
+    version: 2.0.0
+    integration: github-actions
+  properties:
+    ci:
+      codebase:
+        connectorRef: gitconnector
+        repoName: Exchange-Plan
+        build: <+input>
+  stages:
+    - stage:
+        name: Environment Setup
+        identifier: setup
+        description: Setup Python environment and install dependencies
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: System Information
+                  identifier: system_info
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🎓 Exchange Application Integrated Pipeline"
+                      echo "==========================================="
+                      echo "Date: $(date)"
+                      echo "Python: $(python3 --version)"
+                      echo "Git: $(git --version)"
+                      echo "Commit: $(git rev-parse --short HEAD)"
+                      echo "Branch: $(git branch --show-current)"
+                      echo "==========================================="
+              
+              - step:
+                  type: Run
+                  name: Install Dependencies
+                  identifier: install_deps
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "📦 Installing dependencies..."
+                      pip3 install --upgrade pip
+                      pip3 install PyYAML markdown jinja2 python-dateutil
+                      echo "✅ Dependencies installed"
+    
+    - stage:
+        name: Generate Application Documents
+        identifier: generate_documents
+        description: Generate CV and study plans
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Validate Configuration
+                  identifier: validate_config
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🔍 Validating my_profile.yml..."
+                      python3 -c "import yaml; yaml.safe_load(open('my_profile.yml'))"
+                      echo "✅ Configuration valid"
+              
+              - step:
+                  type: Run
+                  name: Generate Documents
+                  identifier: generate_docs
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "📝 Generating application documents..."
+                      
+                      if [ -f "build_scripts/generate_docs.py" ]; then
+                        python3 build_scripts/generate_docs.py --all
+                        
+                        if [ -d "final_applications" ]; then
+                          doc_count=$(find final_applications -name "*.md" 2>/dev/null | wc -l)
+                          echo "✅ Generated $doc_count documents"
+                          find final_applications -type f | sort
+                        else
+                          echo "⚠️ No documents generated"
+                        fi
+                      else
+                        echo "❌ Generator script not found"
+                        exit 1
+                      fi
+    
+    - stage:
+        name: Build GitHub Pages
+        identifier: build_pages
+        description: Generate static website
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Generate GitHub Pages
+                  identifier: generate_pages
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🌐 Generating GitHub Pages..."
+                      
+                      if [ -f "build_scripts/generate_pages.py" ]; then
+                        python3 build_scripts/generate_pages.py
+                        
+                        if [ -d "docs" ] && [ "$(ls -A docs 2>/dev/null)" ]; then
+                          echo "✅ GitHub Pages generated"
+                          echo "📁 Generated files:"
+                          ls -lh docs/
+                        else
+                          echo "⚠️ No pages generated"
+                        fi
+                      else
+                        echo "⚠️ Page generator not found"
+                      fi
+              
+              - step:
+                  type: Run
+                  name: Validate HTML
+                  identifier: validate_html
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🔍 Validating generated HTML..."
+                      
+                      if [ -f "docs/index.html" ]; then
+                        echo "✅ index.html exists"
+                        echo "File size: $(stat -f%z docs/index.html 2>/dev/null || stat -c%s docs/index.html) bytes"
+                      else
+                        echo "⚠️ index.html not found"
+                      fi
+    
+    - stage:
+        name: Commit and Push to GitHub
+        identifier: commit_push
+        description: Push generated files to GitHub
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Commit Changes
+                  identifier: commit_changes
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "📤 Committing changes to GitHub..."
+                      
+                      git config user.email "harness-pipeline@dennisleehappy.org"
+                      git config user.name "Harness Pipeline Bot"
+                      
+                      # Add generated files
+                      git add final_applications/ docs/ || true
+                      
+                      # Check if there are changes
+                      if ! git diff --staged --quiet; then
+                        TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+                        
+                        git commit -m "🤖 Auto-generate: Application documents and GitHub Pages
+
+Generated by Harness Pipeline
+Timestamp: $TIMESTAMP
+Pipeline ID: <+pipeline.sequenceId>
+Commit: $(git rev-parse --short HEAD)
+
+Changes:
+- Application documents in final_applications/
+- GitHub Pages in docs/
+- Auto-generated by Harness CI/CD"
+                        
+                        echo "✅ Changes committed"
+                        
+                        # Push to GitHub
+                        git push origin HEAD:<+codebase.branch>
+                        
+                        echo "✅ Successfully pushed to GitHub!"
+                        echo "Branch: <+codebase.branch>"
+                      else
+                        echo "ℹ️ No changes to commit"
+                      fi
+              
+              - step:
+                  type: Run
+                  name: Trigger GitHub Actions
+                  identifier: trigger_github_actions
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🚀 GitHub Actions will be triggered automatically"
+                      echo "The push will trigger:"
+                      echo "  - exchange-app-pipeline.yml (document generation)"
+                      echo "  - pages-deploy.yml (GitHub Pages deployment)"
+                      echo ""
+                      echo "✅ Harness Pipeline complete!"
+                      echo "📍 Check GitHub Actions for deployment status"
+    
+  variables:
+    - name: profile_file
+      type: String
+      description: Profile configuration file
+      value: my_profile.yml
+    - name: output_directory
+      type: String
+      description: Output directory for generated files
+      value: final_applications
+    - name: pages_directory
+      type: String
+      description: GitHub Pages directory
+      value: docs
+  
+  notificationRules:
+    - name: Pipeline Success Notification
+      identifier: success_notification
+      pipelineEvents:
+        - type: PipelineSuccess
+      notificationMethod:
+        type: Email
+        spec:
+          userGroups: []
+          recipients:
+            - admin@dennisleehappy.org
+          subject: ✅ Harness Pipeline Completed - Exchange Application
+          body: |
+            Harness Pipeline has completed successfully!
+            
+            Pipeline ID: <+pipeline.sequenceId>
+            Execution Time: <+pipeline.startTs>
+            Branch: <+codebase.branch>
+            
+            ✅ Documents generated in final_applications/
+            ✅ GitHub Pages generated in docs/
+            ✅ Changes pushed to GitHub
+            
+            🚀 GitHub Actions will deploy to GitHub Pages automatically
+            
+            Check your repository for the latest changes.
+            
+            Best regards,
+            Harness Pipeline Bot
+      enabled: true
+    
+    - name: Pipeline Failure Notification
+      identifier: failure_notification
+      pipelineEvents:
+        - type: PipelineFailed
+      notificationMethod:
+        type: Email
+        spec:
+          userGroups: []
+          recipients:
+            - admin@dennisleehappy.org
+          subject: ❌ Harness Pipeline Failed - Exchange Application
+          body: |
+            Harness Pipeline has failed!
+            
+            Pipeline ID: <+pipeline.sequenceId>
+            Failed Stage: <+pipeline.stage.name>
+            Execution Time: <+pipeline.startTs>
+            
+            Please check the pipeline logs for detailed error information.
+            
+            Best regards,
+            Harness Pipeline Bot
+      enabled: true
+
