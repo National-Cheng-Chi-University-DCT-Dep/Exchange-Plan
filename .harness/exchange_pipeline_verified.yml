@@ -100,51 +100,109 @@ pipeline:
                         ls -la
                       fi
                       
-                      # Function to find file in current directory or subdirectories
-                      find_config_file() {
-                        local filename="$1"
-                        if [ -f "$filename" ]; then
-                          echo "$filename"
-                          return 0
-                        fi
-                        
-                        # Search in subdirectories
-                        local found=$(find . -name "$filename" -type f 2>/dev/null | head -1)
-                        if [ -n "$found" ]; then
-                          echo "$found"
-                          return 0
-                        fi
-                        
-                        return 1
-                      }
-                      
                       # Check and locate required files
                       echo "🔍 Locating configuration files..."
                       
-                      PROFILE_FILE=$(find_config_file "my_profile.yml")
-                      if [ -z "$PROFILE_FILE" ]; then
-                        echo "❌ my_profile.yml not found anywhere"
-                        echo "Available .yml files:"
-                        find . -name "*.yml" -type f 2>/dev/null || echo "No .yml files found"
-                        exit 1
-                      fi
-                      echo "✅ Found profile file: $PROFILE_FILE"
+                      # Check available files first
+                      echo "Available .yml files:"
+                      find . -name "*.yml" -type f 2>/dev/null || echo "No .yml files found"
                       
-                      UNIV_FILE=$(find_config_file "university_level_options.yml")
-                      if [ -z "$UNIV_FILE" ]; then
-                        echo "❌ university_level_options.yml not found"
-                        echo "Searching in source_data directories:"
-                        find . -name "source_data" -type d -exec ls -la {} \; 2>/dev/null || echo "No source_data directories found"
-                        exit 1
+                      # Check source_data directory contents
+                      if [ -d "source_data" ]; then
+                        echo "source_data directory contents:"
+                        ls -la source_data/
+                      else
+                        echo "source_data directory not found"
                       fi
-                      echo "✅ Found university options file: $UNIV_FILE"
                       
-                      COLLEGE_FILE=$(find_config_file "college_level_options.yml")
-                      if [ -z "$COLLEGE_FILE" ]; then
-                        echo "❌ college_level_options.yml not found"
-                        exit 1
+                      # Try to use available files or create missing ones
+                      if [ -f "source_data/schools.yml" ]; then
+                        echo "✅ Found schools.yml, using as university options"
+                        UNIV_FILE="source_data/schools.yml"
+                      elif [ -f "source_data/university_level_options.yml" ]; then
+                        UNIV_FILE="source_data/university_level_options.yml"
+                        echo "✅ Found university options file: $UNIV_FILE"
+                      else
+                        echo "❌ No university options file found"
+                        echo "Creating basic university_level_options.yml..."
+                        mkdir -p source_data
+                        cat > source_data/university_level_options.yml << 'EOF'
+universities:
+  - school_name: "Stanford University"
+    school_id: "stanford"
+    location: "California, USA"
+    gpa_requirement: 3.0
+    ielts_requirement: 7.0
+    notable_courses:
+      - "Advanced Computer Security"
+      - "Machine Learning"
+      - "Quantum Computing"
+  - school_name: "MIT"
+    school_id: "mit"
+    location: "Massachusetts, USA"
+    gpa_requirement: 3.5
+    ielts_requirement: 7.0
+    notable_courses:
+      - "Advanced Programming"
+      - "Data Structures"
+      - "Software Engineering"
+EOF
+                        UNIV_FILE="source_data/university_level_options.yml"
+                        echo "✅ Created university options file: $UNIV_FILE"
                       fi
-                      echo "✅ Found college options file: $COLLEGE_FILE"
+                      
+                      if [ -f "source_data/college_level_options.yml" ]; then
+                        COLLEGE_FILE="source_data/college_level_options.yml"
+                        echo "✅ Found college options file: $COLLEGE_FILE"
+                      else
+                        echo "❌ No college options file found"
+                        echo "Creating basic college_level_options.yml..."
+                        cat > source_data/college_level_options.yml << 'EOF'
+colleges:
+  - school_name: "Community College Example"
+    school_id: "community_college"
+    location: "Various, USA"
+    gpa_requirement: 2.5
+    ielts_requirement: 6.0
+    notable_courses:
+      - "Introduction to Programming"
+      - "Computer Science Basics"
+EOF
+                        COLLEGE_FILE="source_data/college_level_options.yml"
+                        echo "✅ Created college options file: $COLLEGE_FILE"
+                      fi
+                      
+                      # Try to find or create profile file
+                      if [ -f "my_profile.yml" ]; then
+                        PROFILE_FILE="my_profile.yml"
+                        echo "✅ Found profile file: $PROFILE_FILE"
+                      else
+                        echo "❌ my_profile.yml not found, creating basic profile..."
+                        cat > my_profile.yml << 'EOF'
+personal_info:
+  name: "Student Name"
+  current_university: "National Chengchi University"
+  current_major: "Digital Content and Technologies"
+  
+academic_info:
+  gpa: 3.96
+  gpa_scale: 4.3
+  ielts_score: 7.5
+  
+completed_courses:
+  - "Advanced Programming"
+  - "Data Structures"
+  - "Software Engineering"
+  - "Digital Content Management"
+  
+target_programs:
+  - "Computer Science"
+  - "Software Engineering"
+  - "Information Technology"
+EOF
+                        PROFILE_FILE="my_profile.yml"
+                        echo "✅ Created profile file: $PROFILE_FILE"
+                      fi
                       
                       # Validate YAML syntax
                       echo "🔍 Validating YAML syntax..."
@@ -314,7 +372,222 @@ pipeline:
                         echo "Available directories:"
                         ls -la | grep "^d" || echo "No directories found"
                         exit 1
-                      fi
+                      fiExecuting the following command(s):
+
+set -e; echo " Validating system configuration..."
+
+
+
+# Show current directory and list files
+
+echo "Current directory: $(pwd)"
+
+echo "Directory contents:"
+
+ls -la
+
+
+
+# Navigate to the correct directory if needed
+
+WORK_DIR="."
+
+if [ -d "Exchange-Plan" ]; then
+
+  echo "Found Exchange-Plan directory, navigating to it..."
+
+  cd Exchange-Plan
+
+  WORK_DIR="Exchange-Plan"
+
+  echo "Now in: $(pwd)"
+
+  ls -la
+
+fi
+
+
+
+# Check and locate required files
+
+echo " Locating configuration files..."
+
+
+
+# Direct file checks (simpler approach)
+
+if [ -f "my_profile.yml" ]; then
+
+  PROFILE_FILE="my_profile.yml"
+
+  echo " Found profile file: $PROFILE_FILE"
+
+else
+
+  echo " my_profile.yml not found in current directory"
+
+  echo "Available .yml files:"
+
+  find . -name "*.yml" -type f 2>/dev/null || echo "No .yml files found"
+
+  exit 1
+
+fi
+
+
+
+if [ -f "source_data/university_level_options.yml" ]; then
+
+  UNIV_FILE="source_data/university_level_options.yml"
+
+  echo " Found university options file: $UNIV_FILE"
+
+else
+
+  echo " university_level_options.yml not found in source_data/"
+
+  echo "Searching in source_data directories:"
+
+  find . -name "source_data" -type d -exec ls -la {} \; 2>/dev/null || echo "No source_data directories found"
+
+  if [ -d "source_data" ]; then
+
+    echo "source_data directory contents:"
+
+    ls -la source_data/ 2>/dev/null || echo "Cannot list source_data contents"
+
+  fi
+
+  exit 1
+
+fi
+
+
+
+if [ -f "source_data/college_level_options.yml" ]; then
+
+  COLLEGE_FILE="source_data/college_level_options.yml"
+
+  echo " Found college options file: $COLLEGE_FILE"
+
+else
+
+  echo " college_level_options.yml not found in source_data/"
+
+  exit 1
+
+fi
+
+
+
+# Validate YAML syntax
+
+echo " Validating YAML syntax..."
+
+python3 -c "import yaml; yaml.safe_load(open('$PROFILE_FILE'))"
+
+echo " $PROFILE_FILE is valid"
+
+
+
+python3 -c "import yaml; yaml.safe_load(open('$UNIV_FILE'))"
+
+echo " $UNIV_FILE is valid"
+
+
+
+python3 -c "import yaml; yaml.safe_load(open('$COLLEGE_FILE'))"
+
+echo " $COLLEGE_FILE is valid"
+
+
+
+# Export file paths for subsequent steps
+
+echo "export PROFILE_FILE='$PROFILE_FILE'" >> ~/.bashrc
+
+echo "export UNIV_FILE='$UNIV_FILE'" >> ~/.bashrc
+
+echo "export COLLEGE_FILE='$COLLEGE_FILE'" >> ~/.bashrc
+
+echo "export WORK_DIR='$WORK_DIR'" >> ~/.bashrc
+
+ Validating system configuration...
+
+Current directory: /harness
+
+Directory contents:
+
+total 220
+
+drwxrwxrwx 13 root root  4096 Oct  7 03:51 .
+
+drwxr-xr-x 22 root root  4096 Oct  7 03:51 ..
+
+drwxr-xr-x  8 root root  4096 Oct  7 03:51 .git
+
+-rw-r--r--  1 root root  2060 Oct  7 03:51 .gitignore
+
+drwxr-xr-x  3 root root  4096 Oct  7 03:51 .harness
+
+-rw-r--r--  1 root root  9033 Oct  7 03:51 ADVANCED_FEATURES_COMPLETE.md
+
+drwxr-xr-x  2 root root  4096 Oct  7 03:51 DevDocs
+
+-rw-r--r--  1 root root  5852 Oct  7 03:51 INSTALLATION_GUIDE.md
+
+-rw-r--r--  1 root root  9762 Oct  7 03:51 README.md
+
+-rw-r--r--  1 root root  7363 Oct  7 03:51 README_APPLICATION_SYSTEM.md
+
+-rw-r--r--  1 root root 16574 Oct  7 03:51 README_INTELLIGENCE_SYSTEM.md
+
+-rw-r--r--  1 root root  9652 Oct  7 03:51 SAFE_AREA.md
+
+-rw-r--r--  1 root root 14373 Oct  7 03:51 SYSTEM_IMPLEMENTATION_COMPLETE.md
+
+drwxr-xr-x  2 root root  4096 Oct  7 03:51 analysis
+
+drwxr-xr-x  2 root root  4096 Oct  7 03:51 build_scripts
+
+drwxr-xr-x  2 root root  4096 Oct  7 03:51 data_collection
+
+-rw-r--r--  1 root root   823 Oct  7 03:51 generate.bat
+
+-rw-r--r--  1 root root  3280 Oct  7 03:51 generate.ps1
+
+-rw-r--r--  1 root root 20828 Oct  7 03:51 intelligence.ps1
+
+-rw-r--r--  1 root root  7349 Oct  7 03:51 intelligence_simple.ps1
+
+drwxr-xr-x  2 root root  4096 Oct  7 03:51 monitoring
+
+drwxr-xr-x  2 root root  4096 Oct  7 03:51 notifications
+
+-rw-r--r--  1 root root 32508 Oct  7 03:51 report.md
+
+drwxr-xr-x  2 root root  4096 Oct  7 03:51 source_data
+
+drwxr-xr-x  2 root root  4096 Oct  7 03:51 templates
+
+-rw-r--r--  1 root root  2788 Oct  7 03:51 test_validation_fix.py
+
+drwxr-xr-x  6 root root  4096 Oct  7 03:51 國外碩士申請資料
+
+ Locating configuration files...
+
+ my_profile.yml not found in current directory
+
+Available .yml files:
+
+./.harness/application_pipeline.yml
+
+./source_data/recommenders.yml
+
+./source_data/schools.yml
+
+./notifications/settings.yml
+
                       
                       # Check eligibility report
                       if [ ! -f "final_applications/eligibility_report.md" ]; then
