@@ -115,6 +115,9 @@ pipeline:
                         echo "source_data directory not found"
                       fi
                       
+                      # Force update: Use available files or create missing ones
+                      echo "🔧 Processing configuration files..."
+                      
                       # Try to use available files or create missing ones
                       if [ -f "source_data/schools.yml" ]; then
                         echo "✅ Found schools.yml, using as university options"
