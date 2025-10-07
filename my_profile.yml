@@ -1,0 +1,878 @@
+# 個人申請條件檔案 - 李沛宸 (Pei-Chen Lee)
+# 此檔案包含交換申請所需的所有個人條件和背景資料
+# 最後更新：2025-10-07
+
+# ==================== 基本資料 ====================
+personal_info:
+  name: "李沛宸 (Pei-Chen Lee)"
+  english_name: "Pei-Chen Lee"
+  student_id: "110462011"  # 政大學號
+  current_status: "Graduate Student"
+  email: "admin@dennisleehappy.org"
+  phone: "+886 909 258 032"
+  portfolio: "https://www.dennisleehappy.org/"
+  linkedin: "https://www.linkedin.com/in/pei-chen-lee-4a3a352a2/"
+  github: "https://github.com/dennislee928"
+
+# ==================== 學歷背景 ====================
+education:
+  current_program:
+    university: "National Chengchi University (NCCU)"
+    program: "Digital Content and Technologies"
+    degree_type: "Graduate Coursework"
+    start_date: "Sept 2021"
+    end_date: "Present"
+    gpa: 3.96
+    max_gpa: 4.3
+    gpa_percentage: 92.09  # 3.96/4.3 * 100
+    class_ranking: "Top 5%"
+    
+  undergraduate:
+    university: "National Chengchi University (NCCU)"
+    program: "Management Information Systems"
+    degree_type: "Bachelor of Science"
+    start_date: "Sept 2015"
+    end_date: "June 2020"
+
+# ==================== 語言能力 ====================
+language_proficiency:
+  chinese:
+    level: "Native"
+    
+  english:
+    ielts:
+      overall_score: 7.0
+      listening: 7.5
+      reading: 9.0
+      writing: 5.5
+      speaking: 6.5
+      test_date: "2025-03-10"
+      test_reference: "TW00125503682-03-10-2025-ETRF.pdf"
+      cefr_level: "C1"
+    
+    ef_set:
+      score: 76
+      level: "C2 Proficient"
+      valid_until: "2026-05"
+      certificate_id: "EzZN4n"
+    
+    self_assessment:
+      reading: "Advanced (IELTS 9.0)"
+      writing: "Intermediate-Advanced (IELTS 5.5)"
+      listening: "Advanced (IELTS 7.5)"
+      speaking: "Intermediate-Advanced (IELTS 6.5)"
+
+# ==================== 研究主題 ====================
+research_interests:
+  primary:
+    - "Quantum Computing and Technological Singularity"
+    - "Post-Quantum Cryptography"
+    - "AI Safety and Ethics"
+    
+  secondary:
+    - "Blockchain Security"
+    - "Zero Trust Architecture"
+    - "Decentralized Finance (DeFi)"
+
+  thesis:
+    title: "Quantum Computing & Technological Singularity"
+    description: "Developing a theoretical framework and simulation to analyze the impact of quantum computing on AI development trajectories"
+    github_url: "https://github.com/dennislee928/thesis"
+    methodology: "Algorithm simulation and theoretical analysis"
+
+# ==================== 專業技能 ====================
+technical_skills:
+  programming_languages:
+    - name: "Golang"
+      level: "Advanced"
+      years_experience: 3
+      
+    - name: "Python"
+      level: "Advanced"
+      years_experience: 5
+      
+    - name: "JavaScript/TypeScript"
+      level: "Expert"
+      years_experience: 5
+      
+    - name: "SQL"
+      level: "Advanced"
+      years_experience: 4
+      
+    - name: "C/C++"
+      level: "Intermediate"
+      years_experience: 2
+      context: "ESP32 firmware development"
+      
+    - name: "Bash/Shell"
+      level: "Intermediate"
+      years_experience: 3
+
+  cloud_platforms:
+    - name: "AWS"
+      level: "Advanced"
+      certifications: ["AWS Certified Cloud Practitioner", "AWS Security Fundamentals"]
+      
+    - name: "GCP"
+      level: "Advanced"
+      certifications: ["Architecting with Google Kubernetes Engine", "Deploy Kubernetes Applications on Google Cloud"]
+      
+    - name: "Cloudflare"
+      level: "Expert"
+      certifications: ["ACE", "ASE", "MSP"]
+      
+    - name: "Oracle Cloud Infrastructure"
+      level: "Intermediate"
+      certifications: ["OCI 2024 Certified Foundations Associate"]
+
+  security_expertise:
+    - "Zero Trust Architecture"
+    - "WAF Configuration"
+    - "DDoS Mitigation"
+    - "IAM Management"
+    - "Penetration Testing"
+    - "SIEM Tools (Splunk, Axiom)"
+    - "DevSecOps & SSDLC"
+    - "Vulnerability Assessment (Snyk, Semgrep, GitHub Dependabot)"
+
+  quantum_computing:
+    - "IBM Qiskit"
+    - "Azure Quantum"
+    - "Quantum Algorithm Design"
+    - "Quantum-Safe Cryptography"
+
+  frameworks_tools:
+    backend:
+      - "Node.js (Express, NestJS)"
+      - "Golang (Gin)"
+    frontend:
+      - "React (Next.js)"
+      - "Vue.js (Nuxt.js)"
+    devops:
+      - "Docker & Kubernetes"
+      - "Terraform"
+      - "GitHub Actions"
+      - "CI/CD Pipelines"
+    healthcare_it:
+      - "FHIR/HL7"
+      - "ICD-10"
+      - "Electronic Health Records (EHR)"
+      - "Hospital Information Systems (HIS)"
+
+# ==================== 專業證照 ====================
+certifications:
+  # Security & Cybersecurity
+  - name: "Certified in Cybersecurity (CC)"
+    issuer: "ISC²"
+    year: 2025
+    month: 8
+    expiration: "2028-08"
+    status: "Active"
+    category: "Security"
+    skills: ["Cyber Defense", "Cyber Security Risk", "Security Engineering", "Server Management"]
+    
+  - name: "Cloudflare Accredited Configuration Engineer (ACE)"
+    issuer: "Cloudflare Area 1 Security"
+    year: 2024
+    month: 9
+    certificate_id: "60029"
+    expiration: "2026-06"
+    status: "Active"
+    category: "Security"
+    skills: ["SSL/TLS", "DNS", "Cyber Defense", "IAM", "HPC"]
+    
+  - name: "Cloudflare Accredited Sales Engineer (ASE)"
+    issuer: "Cloudflare Area 1 Security"
+    year: 2024
+    month: 9
+    certificate_id: "ASE"
+    expiration: "2026-09"
+    status: "Active"
+    category: "Security"
+    skills: ["Cache Object Script", "Security Management", "Cyber Security Risk", "Network Security", "OSI Model"]
+    
+  - name: "Cloudflare MSP Specialization"
+    issuer: "Cloudflare Area 1 Security"
+    year: 2024
+    month: 9
+    certificate_id: "5613"
+    expiration: "2026-09"
+    status: "Active"
+    category: "Security"
+    skills: ["Tenant Platform", "Zscaler Zero Trust Exchange", "VPN", "WARP", "Data Encryption"]
+    
+  - name: "DSPM Fundamentals"
+    issuer: "Securiti"
+    year: 2025
+    month: 9
+    certificate_id: "1390411FB-13903EBB4-1276F2FD0"
+    status: "Active"
+    category: "Security"
+    skills: ["Cyber Security Risk", "Security Engineering", "Containerization"]
+    
+  - name: "AI Governance Certification"
+    issuer: "Securiti"
+    year: 2024
+    month: 10
+    certificate_id: "13314"
+    status: "Active"
+    category: "AI/ML"
+    
+  - name: "Security Service Edge with Versa Concerto"
+    issuer: "Versa Networks"
+    year: 2024
+    month: 12
+    certificate_id: "22328-ba85ef7b4"
+    expiration: "2025-12"
+    status: "Active"
+    category: "Security"
+    skills: ["Cyber Defense", "Cyber Security Risk", "Security Engineering"]
+    
+  - name: "Private Detective Training"
+    issuer: "Adams Academy"
+    year: 2024
+    month: 12
+    certificate_id: "172-11058-9689"
+    status: "Active"
+    category: "Security"
+    skills: ["Cyber Defense"]
+
+  # Prisma Cloud Certifications
+  - name: "Prisma Cloud: Risk Prevention - Features"
+    issuer: "Palo Alto Networks (Prisma)"
+    year: 2025
+    month: 2
+    certificate_id: "360488920"
+    status: "Active"
+    category: "Security"
+    skills: ["Cyber Security Risk", "Cyber Defense", "GCP", "AWS Security", "AWS CloudFormation", "Data Encryption"]
+    
+  - name: "Prisma Cloud: Visibility and Control - Features"
+    issuer: "Palo Alto Networks (Prisma)"
+    year: 2025
+    month: 2
+    certificate_id: "360491152"
+    status: "Active"
+    category: "Security"
+    skills: ["Cyber Security Risk", "Cyber Defense", "DevOps", "CI/CD", "VPN", "Administrator"]
+    
+  - name: "Prisma Cloud: Runtime Protection - Features"
+    issuer: "Palo Alto Networks (Prisma)"
+    year: 2025
+    month: 2
+    certificate_id: "360490923"
+    status: "Active"
+    category: "Security"
+    skills: ["Cyber Defense", "Cyber Security Risk", "CI/CD", "Security Engineering", "AWS Security", "GCP"]
+
+  # Cloud Platform Certifications
+  - name: "AWS Cloud Practitioner Essentials"
+    issuer: "Amazon Web Services (AWS)"
+    year: 2024
+    month: 10
+    certificate_id: "c5ee384e08fff912b929fd3543b0b33b1a25d677223c6e5029b825e1d7b41075"
+    status: "Active"
+    category: "Cloud"
+    skills: ["AWS", "AWS Lambda", "AWS Security", "Amazon CloudWatch", "AWS IAM", "AWS Elastic Beanstalk"]
+    
+  - name: "AWS Security Fundamentals Second Edition"
+    issuer: "Amazon Web Services (AWS)"
+    year: 2024
+    month: 9
+    status: "Active"
+    category: "Cloud"
+    skills: ["AWS Security", "AWS", "AWS IAM"]
+    
+  - name: "US Federal Quantum Learning Learning Path"
+    issuer: "Amazon Web Services (AWS)"
+    year: 2024
+    month: 10
+    certificate_id: "DCCR-FLP-100-DCQNTM-0100-EN-US"
+    status: "Active"
+    category: "Quantum"
+    skills: ["Quantum Computing", "Quantum Theory", "Quantum Information", "AWS Security", "AWS"]
+    
+  - name: "Oracle Cloud Infrastructure 2024 Certified Foundations Associate"
+    issuer: "Oracle"
+    year: 2024
+    month: 9
+    status: "Active"
+    category: "Cloud"
+    skills: ["Containerization"]
+    
+  - name: "Architecting with Google Kubernetes Engine: Foundations"
+    issuer: "Google"
+    year: 2024
+    month: 6
+    certificate_id: "9470668"
+    status: "Active"
+    category: "Cloud"
+    skills: ["GCP", "Kubernetes"]
+    
+  - name: "Deploy Kubernetes Applications on Google Cloud Skill Badge"
+    issuer: "Google"
+    year: 2025
+    month: 2
+    status: "Active"
+    category: "Cloud"
+    skills: ["Cyber Security Risk", "GCP"]
+    
+  - name: "Implement Cloud Security Fundamentals on Google Cloud Skill Badge"
+    issuer: "Google"
+    year: 2025
+    month: 1
+    status: "Active"
+    category: "Cloud"
+    
+  - name: "Prompt Design in Vertex AI"
+    issuer: "Google"
+    year: 2025
+    month: 8
+    certificate_id: "17398787"
+    status: "Active"
+    category: "AI/ML"
+    skills: ["GCP"]
+
+  # Quantum Computing Certifications
+  - name: "Fundamentals of Quantum Computing (LFQ101)"
+    issuer: "The Linux Foundation"
+    year: 2024
+    month: 9
+    certificate_id: "a71ccc25-705c-4f69-b791-3da4e641a550"
+    expiration: "2026-09"
+    status: "Active"
+    category: "Quantum"
+    skills: ["Quantum Computing", "Quantum Information", "Quantum Theory", "Quantum GIS"]
+    
+  - name: "LFQ102: Quantum Computing Essentials For Senior Leaders"
+    issuer: "The Linux Foundation"
+    year: 2024
+    month: 11
+    status: "Active"
+    category: "Quantum"
+    skills: ["Quantum Computing", "Quantum Information", "Quantum Theory"]
+    
+  - name: "Get started with Azure Quantum"
+    issuer: "Microsoft"
+    year: 2024
+    month: 11
+    certificate_id: "b6wwyzgd"
+    status: "Active"
+    category: "Quantum"
+    skills: ["Quantum Computing", "Quantum Information", "Quantum Theory", "Quantum GIS"]
+    
+  - name: "Quantum Business Foundations"
+    issuer: "IBM"
+    year: 2024
+    month: 11
+    status: "Active"
+    category: "Quantum"
+    skills: ["Quantum Computing", "Quantum Information"]
+    
+  - name: "Basics of Quantum Information"
+    issuer: "IBM"
+    year: 2024
+    month: 9
+    status: "Active"
+    category: "Quantum"
+    skills: ["Quantum Information", "Quantum Theory"]
+    
+  - name: "Practical Introduction to Quantum-Safe Cryptography"
+    issuer: "IBM"
+    year: 2024
+    month: 9
+    certificate_id: "7hxp59G"
+    status: "Active"
+    category: "Quantum"
+    skills: ["Cyber Security Risk", "Cyber Defense"]
+    
+  - name: "Variational Algorithm Design"
+    issuer: "IBM"
+    year: 2024
+    month: 9
+    status: "Active"
+    category: "Quantum"
+    skills: ["Quantum Computing"]
+
+  # Healthcare IT Certifications
+  - name: "Johns Hopkins University: Healthcare IT Support Specialization"
+    issuer: "Johns Hopkins University"
+    year: 2024
+    month: 5
+    certificate_id: "KA6BHFGHEU6K"
+    expiration: "2034-05"
+    status: "Active"
+    category: "Healthcare IT"
+    skills: ["Technical Support", "Customer Service", "EHR", "HIT", "Telemedicine"]
+    
+  - name: "Johns Hopkins University: The Critical Role of IT Support Staff in Healthcare"
+    issuer: "Johns Hopkins University"
+    year: 2024
+    month: 5
+    certificate_id: "S8C6LXELK7VC"
+    status: "Active"
+    category: "Healthcare IT"
+    skills: ["Hospital Information Systems", "MIS Management"]
+    
+  - name: "ICD10 Certification"
+    issuer: "Centers for Medicare & Medicaid Services (CMS)"
+    year: 2024
+    month: 8
+    status: "Active"
+    category: "Healthcare IT"
+
+  # DevOps & Development
+  - name: "Network Automation Engineering Fundamentals Specialization"
+    issuer: "Cisco Learning and Certifications"
+    year: 2024
+    month: 6
+    certificate_id: "5FDUUS52DRE7"
+    status: "Active"
+    category: "Network"
+    skills: ["Docker"]
+    
+  - name: "Create and publish custom GitHub actions"
+    issuer: "Microsoft"
+    year: 2024
+    month: 7
+    status: "Active"
+    category: "DevOps"
+    skills: ["GitHub Actions", "YAML", "GitHub", "GitFlow", "GitHub Workflow"]
+    
+  - name: "GitHub administration for GitHub Advanced Security"
+    issuer: "Microsoft"
+    year: 2024
+    month: 7
+    status: "Active"
+    category: "DevOps"
+    skills: ["Security Engineering", "GitHub"]
+    
+  - name: "Manage sensitive data and security policies within GitHub"
+    issuer: "Microsoft"
+    year: 2024
+    month: 7
+    status: "Active"
+    category: "DevOps"
+    skills: ["DevOps", "Administrator", "Developer", "Solution Architecture", "GitHub"]
+
+  # Blockchain & DeFi
+  - name: "Blockchain Certification Training"
+    issuer: "Simplilearn"
+    year: 2025
+    month: 3
+    certificate_id: "8111270_8017284174323542713"
+    status: "Active"
+    category: "Blockchain"
+    skills: ["Blockchain", "Cyber Defense", "Cyber Security Risk"]
+    
+  - name: "Duke University: Decentralized Finance (DeFi) Opportunities and Risks"
+    issuer: "Duke University"
+    year: 2024
+    month: 5
+    certificate_id: "KD5PGWTKSMPZ"
+    status: "Active"
+    category: "Blockchain"
+
+  # Database & Programming
+  - name: "University of California, Davis: SQL for Data Science"
+    issuer: "UC Davis"
+    year: 2024
+    month: 6
+    certificate_id: "A46TXWTUDXZ5"
+    status: "Active"
+    category: "Programming"
+    skills: ["SQL"]
+    
+  - name: "StudySection: React-18 (Foundation) Certification"
+    issuer: "StudySection"
+    year: 2024
+    month: 5
+    certificate_id: "758759"
+    expiration: "2034-12"
+    status: "Active"
+    category: "Programming"
+    skills: ["React.js"]
+
+  # Project Management
+  - name: "Project Management 101"
+    issuer: "Simplify Healthcare"
+    year: 2025
+    month: 4
+    certificate_id: "8115736_80172841743479979497"
+    status: "Active"
+    category: "Management"
+    skills: ["DevOps", "MIS Management"]
+
+  # Other Technical
+  - name: "Enterprise Architecture Foundations"
+    issuer: "LinkedIn Learning"
+    year: 2024
+    month: 10
+    status: "Active"
+    category: "Architecture"
+    
+  - name: "Electronics Foundations: Fundamentals"
+    issuer: "LinkedIn Learning"
+    year: 2024
+    month: 12
+    status: "Active"
+    category: "Hardware"
+    
+  - name: "Versa Titan – SASE for Lean IT"
+    issuer: "Versa Networks"
+    year: 2024
+    month: 12
+    certificate_id: "15680-0b21cd2af4"
+    status: "Active"
+    category: "Network"
+    skills: ["Internet Design", "SASE"]
+
+  # Fun Achievements
+  - name: "HunterXHunter Birthday Achievement"
+    issuer: "HunterXHunter .Co (NCCU branch)"
+    year: 2024
+    month: 11
+    certificate_id: "65cc424a-3751-4f0e-950a-3609dbaceb30"
+    status: "Active"
+    category: "Community"
+
+# ==================== 工作經驗 ====================
+professional_experience:
+  current_position:
+    title: "Cybersecurity Developer"
+    company: "MITAKE Information Co., Ltd."
+    location: "Taipei, Taiwan"
+    start_date: "Sept 2024"
+    end_date: "Present"
+    key_achievements:
+      - "Led end-to-end integration of hardware security key (HPkey) with client-side agents and cloud management console"
+      - "Developed firmware for ESP32-based hardware components using C/C++"
+      - "Established secure software development lifecycle (SSDLC) by integrating automated Git security scanning into CI/CD pipeline"
+      - "Designed and implemented in-house penetration testing laboratory"
+      - "Performed quantitative and qualitative analysis on security logs (Prometheus, Grafana, SIEM) against ISO 27001/ISC standards"
+    technologies: ["C/C++", "ESP32", "Git Security Scanning", "CI/CD", "Penetration Testing", "SIEM", "ISO 27001"]
+
+  previous_positions:
+    - title: "Cybersecurity Consultant / Development Leader"
+      company: "Twister5"
+      location: "Taipei, Taiwan"
+      start_date: "Sept 2023"
+      end_date: "May 2024"
+      key_achievements:
+        - "Led critical infrastructure protection projects for Taiwan Stock Exchange (TWSE) and Cathay Financial Holdings"
+        - "Engineered automated DNS and WAF solutions for enterprise clients"
+        - "Architected Business Decision Engine (BDE) with Next.js and React Three Fiber (R3F)"
+        - "Conducted technical feasibility studies for AI BDE across various OS, hardware, firmware, and LLMs"
+        - "Orchestrated PoC for quantum computing integration with IBM quantum systems"
+        - "Authored and presented confidential technical architecture reports for Cloudflare deployments"
+      clients: ["Taiwan Armed Forces Medical Bureau", "Cathay Financial Holdings", "Taiwan Stock Exchange (TWSE)", "ITRI"]
+      technologies: ["Cloudflare", "DNS", "WAF", "Next.js", "R3F", "IBM Qiskit", "Quantum Computing"]
+      
+    - title: "Frontend Web / Cloud Developer"
+      company: "Bityacht"
+      location: "Taipei, Taiwan"
+      start_date: "Oct 2023"
+      end_date: "May 2024"
+      key_achievements:
+        - "Led migration to Google Cloud Platform (GCP) with GitHub Actions CI/CD pipeline"
+        - "Implemented Cloudflare Zero Trust security architecture"
+        - "Identified and patched 30+ NPM supply-chain vulnerabilities using automated scanning tools"
+        - "Established DevSecOps practices for frontend development"
+      technologies: ["GCP", "GitHub Actions", "Cloudflare Zero Trust", "NPM Security", "DevSecOps"]
+
+# ==================== 國際發展經驗 ====================
+international_development:
+  - title: "Selected Appointee - HIS Engineer"
+    organization: "TaiwanICDF (Taiwan International Cooperation and Development Fund)"
+    location: "Somaliland (Remote)"
+    start_date: "2024"
+    end_date: "2024"
+    description: "Selected for Somaliland Mission focusing on Health Information System (HIS) development"
+    key_achievements:
+      - "Identified and fixed critical PostgreSQL UUID hash collision bug that posed life-threatening risks to patient data integrity"
+      - "Implemented comprehensive vulnerability scanning using Snyk, Semgrep, and GitHub Dependabot"
+      - "Introduced SAST (Static Application Security Testing) and DevSecOps cycle to local engineering team"
+      - "Served as technical mentor and project coordinator for local Somaliland engineers"
+      - "Created educational materials and training on Git workflows (branch, tree, actions, IAM)"
+      - "Coordinated development schedule and goals using GitHub Projects with multilingual documentation"
+      - "Integrated microservices, PostgreSQL, IoT, and AI capabilities into HIS system architecture"
+    technologies: ["PostgreSQL", "SAST", "DevSecOps", "Git", "GitHub", "Snyk", "Semgrep", "HIS", "FHIR/HL7", "Microservices"]
+    skills_demonstrated: ["Technical Mentorship", "Cross-Cultural Collaboration", "Remote Coordination", "Healthcare IT"]
+
+# ==================== 研究經驗 ====================
+research_experience:
+  - title: "Research Assistant"
+    organization: "NCCU Innovation Incubation Center"
+    location: "Taipei, Taiwan"
+    start_date: "Sept 2021"
+    end_date: "June 2023"
+    description: "Developed educational games using Unity engine and managed App Store publishing pipeline"
+    technologies: ["Unity", "C#", "Mobile App Development", "iOS/Android Publishing"]
+    
+  - title: "Research Assistant"
+    organization: "NCCU Innovation Incubation Center"
+    location: "Taipei, Taiwan"
+    start_date: "Oct 2019"
+    end_date: "June 2020"
+    description: "Built 'Help You Out,' a parent-teacher communication tool"
+    technologies: ["Web Development", "Communication Platform"]
+
+# ==================== 跨文化經驗 ====================
+cross_cultural_experience:
+  - title: "Lead Guitarist & Tour Co-organizer"
+    organization: "UN AVEC DEUX (樂團)"
+    event: "Japan Performance Tour"
+    location: "Osaka, Japan (Multi-city)"
+    year: 2023
+    description: "Independently co-organized and executed multi-city performance tour without tour agency"
+    key_achievements:
+      - "Demonstrated effective cross-lingual communication by coordinating directly with Japanese venue owners and musicians via email/messenger using translation tools"
+      - "Proactively managed technical requirements by creating detailed stage plots and equipment lists"
+      - "Ensured seamless collaboration with local technical teams"
+      - "Successfully navigated unfamiliar local customs and resolved unforeseen challenges"
+      - "Showcased strong adaptability and problem-solving skills in foreign environment"
+    skills_demonstrated: ["Cross-Cultural Communication", "Event Organization", "Logistics Planning", "Adaptability", "Problem Solving"]
+
+# ==================== 獲獎記錄 ====================
+awards_honors:
+  - name: "Selected Appointee, HIS Engineer"
+    organization: "TaiwanICDF"
+    year: 2024
+    description: "Somaliland Mission - International Development (Healthcare Information Systems)"
+    category: "International Development"
+    
+  - name: "Meta Hackathon Reward"
+    organization: "Meta (Facebook)"
+    year: 2023
+    description: "Competitive programming and innovation challenge"
+    category: "Technology Competition"
+    
+  - name: "Graduate Student Scholarship"
+    organization: "NCCU"
+    year: 2023
+    description: "Academic excellence recognition"
+    category: "Academic"
+    evidence: "supporting_documents/獎學金.png"
+    
+  - name: "Featured Artist - NFT Creation Exhibition"
+    organization: "NCCU Art Center"
+    year: 2023
+    description: "NFT Creation Exhibition - Bridged crypto technology and artistic expression with artwork '名稱臉'"
+    category: "Arts & Technology"
+    url: "https://osa.nccu.edu.tw/tw/藝文中心/最新消息/10436"
+    evidence: "supporting_documents/參展以及比賽.docx"
+    
+  - name: "Best Popularity Award"
+    organization: "NCCU"
+    year: 2020
+    description: "Graduation Project Competition"
+    category: "Academic"
+    url: "https://dct.nccu.edu.tw/PageDocAll/Detail?fid=12444&id=24820"
+    
+  - name: "GitHub Achievements"
+    organization: "GitHub"
+    year: 2024
+    description: "Active open-source contributor with multiple achievements"
+    category: "Technology"
+    evidence: ["supporting_documents/Github-achivement-1.png", "supporting_documents/Github-achivement-2.png"]
+
+# ==================== 校園參與 ====================
+campus_involvement:
+  description: "Active participation in campus affairs and student organizations"
+  evidence: "supporting_documents/校園事務參與.png"
+
+# ==================== 交換申請偏好 ====================
+exchange_preferences:
+  application_cycle: "2026 (115學年度)"
+  application_system: "台灣聯合大學系統 (University System of Taiwan)"
+  
+  target_universities:
+    first_choice:
+      university: "University of Bern"
+      country: "Switzerland"
+      reasons:
+        - "Switzerland is the intersection of traditional financial privacy and modern data privacy (GDPR)"
+        - "Europe is the cradle of quantum physics with rigorous academic traditions"
+        - "Strong reputation in cryptography and AI research"
+      preferred_courses:
+        - "Advanced Topics in Cryptography"
+        - "Machine Learning"
+      preferred_professors:
+        - "Prof. Christian Cachin (Cryptography & Blockchain Security)"
+    
+    second_choice:
+      university: "University of California, San Diego (UCSD)"
+      country: "United States"
+      reasons:
+        - "Proximity to Silicon Valley innovation ecosystem"
+        - "World-class Computer Science department"
+        - "Strong research in security and AI"
+      preferred_courses:
+        - "CSE 227: Computer Security"
+        - "CSE 291: Topics in Artificial Intelligence (Trustworthy AI)"
+      research_centers:
+        - "Center for Networked Systems (CNS)"
+        - "Security and Cryptography Group"
+      notable_faculty:
+        - "Prof. Mihir Bellare (Cryptography)"
+    
+  target_programs:
+    - "Cybersecurity"
+    - "Computer Science"
+    - "Quantum Computing"
+    - "Cryptography"
+    - "Artificial Intelligence"
+    
+  duration_preference: "1 semester"
+  
+  language_requirement_tolerance:
+    english_only: true
+    other_languages: false
+    
+  academic_level:
+    graduate: true
+    undergraduate: false
+
+# ==================== 申請文件狀態 ====================
+application_documents:
+  application_form:
+    status: "In Progress"
+    source: "簡章檔案附件 page 5"
+    todo: "填寫所有個人資料，列印後親自簽名"
+    
+  identity_documents:
+    status: "Ready"
+    items:
+      - "身分證正反面影本"
+      - "學生證正反面影本"
+      - "護照照片頁影本"
+    todo: "影印後黏貼於申請表第6頁"
+    
+  cv:
+    status: "Draft Complete"
+    last_updated: "2025-10-07"
+    source: "Exchange student/履歷表 (C.V.) - 交換學生申請專用版.docx"
+    
+  study_plan:
+    status: "Draft Complete"
+    last_updated: "2025-10-07"
+    source: "Exchange student/台灣聯合大學系統 交換學生出國研修學習計畫書 (草稿).docx"
+    targets: ["University of Bern", "UC San Diego"]
+    
+  transcripts:
+    status: "Ready (Scanned)"
+    last_updated: "2025-10-07"
+    location: "Exchange student/成績單/"
+    files: 6
+    todo: "向政大教務處申請碩士班前一學年的官方英文成績單"
+    
+  recommendation_letters:
+    status: "Draft Prepared"
+    count: 1
+    source: "Exchange student/推薦信請求信 (Email 草稿).docx"
+    includes: ["Request Email Template", "Brag Sheet"]
+    todo: "選定推薦教授並寄送請求信"
+    
+  language_certificates:
+    status: "Complete"
+    ielts:
+      file: "Exchange student/TW00125503682-03-10-2025-ETRF.pdf"
+      overall: 7.0
+      status: "Ready"
+    ef_set:
+      score: 76
+      level: "C2"
+      status: "Ready"
+      
+  supporting_documents:
+    status: "Ready"
+    location: "Exchange student/其他有利資料/"
+    items:
+      certifications:
+        count: "45+"
+        source: "Exchange student/證照/certifications.docx"
+        status: "Documented"
+      awards:
+        - "獎學金證明"
+        - "NFT展覽"
+        - "畢業專題獎項"
+        status: "Ready"
+      campus_involvement:
+        source: "校園事務參與.png"
+        status: "Ready"
+      github_achievements:
+        files: ["Github-achivement-1.png", "Github-achivement-2.png"]
+        status: "Ready"
+      portfolio:
+        url: "https://www.dennisleehappy.org/"
+        github: "https://github.com/dennislee928"
+        thesis: "https://github.com/dennislee928/thesis"
+        status: "Ready"
+
+# ==================== 申請時程 ====================
+application_timeline:
+  internal_deadline: "2026-01-12"
+  recommendation_letter_deadline: "Before 2026-01-12"
+  
+  checklist:
+    - item: "填寫並簽署申請表"
+      status: "Pending"
+    - item: "準備身分證、學生證、護照影本"
+      status: "Pending"
+    - item: "申請官方英文成績單"
+      status: "Pending"
+    - item: "完成英文履歷 (CV)"
+      status: "Draft Complete"
+    - item: "完成學習計畫書"
+      status: "Draft Complete"
+    - item: "取得推薦信"
+      status: "Pending"
+    - item: "準備語言檢定成績單"
+      status: "Complete"
+    - item: "整理證照與獲獎證明"
+      status: "Complete"
+
+# ==================== 特殊條件 ====================
+special_considerations:
+  military_service:
+    status: "Completed or Exempt"
+    
+  financial_aid_need:
+    required: true
+    note: "需要獎學金或財務補助"
+    
+  health_conditions:
+    has_conditions: false
+    
+  accessibility_needs:
+    has_needs: false
+
+# ==================== 備註與策略 ====================
+notes:
+  strengths:
+    - "豐富的網路安全實務經驗（5年），曾服務於台灣證券交易所、國泰金控等關鍵基礎設施"
+    - "持有45+國際專業證照，涵蓋資安、雲端、量子計算等領域"
+    - "對量子計算和AI安全有深入研究，碩士論文聚焦前瞻技術"
+    - "具備跨文化合作經驗（日本巡演、索馬利蘭遠端協作）"
+    - "IELTS 7.0，閱讀9.0滿分，展現優異英語能力"
+    - "GitHub活躍貢獻者，展現開源社群參與"
+    - "跨領域背景：技術、藝術（NFT展覽）、音樂（樂團）"
+    
+  areas_to_highlight:
+    - "From industry practitioner to academic explorer的轉型故事"
+    - "理論與實踐結合的能力（如索馬利蘭HIS專案中發現並修復critical bug）"
+    - "技術導師能力（指導索馬利蘭工程師、建立DevSecOps文化）"
+    - "量子計算的自學能力與研究熱情"
+    - "對交換計畫的明確目標：驗證職涯路徑、建立國際人脈、為未來深造或職涯奠基"
+    
+  potential_challenges:
+    - "IELTS寫作分數較低（5.5），可能需要在申請文件中展現更強的書寫能力以彌補"
+    - "需確保推薦信能有力支持申請"
+    
+  next_steps:
+    - "根據此profile自動生成客製化申請文件"
+    - "建立交換機會資料庫並進行資格驗證"
+    - "準備推薦信請求並選定推薦教授"
+    - "申請官方英文成績單"
+    - "完成申請表填寫"
+

@@ -1,0 +1,209 @@
+# Curriculum Vitae (C.V.)
+## {{APPLICANT_NAME}}
+
+{{LOCATION}} | {{PHONE}} | {{EMAIL}}  
+[Portfolio]({{PORTFOLIO_URL}}) | [LinkedIn]({{LINKEDIN_URL}}) | [GitHub]({{GITHUB_URL}})
+
+---
+
+## ACADEMIC PROFILE
+
+{{ACADEMIC_PROFILE_SUMMARY}}
+
+---
+
+## EDUCATION
+
+**{{CURRENT_UNIVERSITY}}**, {{CURRENT_LOCATION}}  
+{{CURRENT_DEGREE}} in {{CURRENT_PROGRAM}} | {{CURRENT_START_DATE}} – {{CURRENT_END_DATE}}  
+- Cumulative GPA: {{GPA}} / {{MAX_GPA}} ({{GPA_PERCENTAGE}}%)
+- Class Ranking: {{CLASS_RANKING}}
+
+**{{UNDERGRADUATE_UNIVERSITY}}**, {{UNDERGRADUATE_LOCATION}}  
+{{UNDERGRADUATE_DEGREE}} in {{UNDERGRADUATE_PROGRAM}} | {{UNDERGRADUATE_START_DATE}} – {{UNDERGRADUATE_END_DATE}}
+
+---
+
+## RESEARCH & ACADEMIC PROJECTS
+
+### {{THESIS_TITLE}} ({{THESIS_STATUS}})
+{{THESIS_DESCRIPTION}}
+
+**Research Method**: {{THESIS_METHODOLOGY}}  
+**GitHub Repository**: [{{THESIS_GITHUB_URL}}]({{THESIS_GITHUB_URL}})
+
+{{#ADDITIONAL_RESEARCH_PROJECTS}}
+### {{PROJECT_TITLE}}
+{{PROJECT_DESCRIPTION}}
+{{/ADDITIONAL_RESEARCH_PROJECTS}}
+
+---
+
+## PROFESSIONAL EXPERIENCE
+
+### {{CURRENT_JOB_TITLE}} | {{CURRENT_COMPANY}} | {{CURRENT_JOB_LOCATION}} | {{CURRENT_JOB_PERIOD}}
+
+{{#CURRENT_JOB_ACHIEVEMENTS}}
+- {{ACHIEVEMENT}}
+{{/CURRENT_JOB_ACHIEVEMENTS}}
+
+{{#PREVIOUS_JOBS}}
+### {{JOB_TITLE}} | {{COMPANY}} | {{LOCATION}} | {{PERIOD}}
+
+{{#ACHIEVEMENTS}}
+- {{ACHIEVEMENT}}
+{{/ACHIEVEMENTS}}
+
+{{#KEY_CLIENTS}}
+**Key Clients**: {{CLIENTS_LIST}}
+{{/KEY_CLIENTS}}
+{{/PREVIOUS_JOBS}}
+
+---
+
+## INTERNATIONAL DEVELOPMENT & CROSS-CULTURAL EXPERIENCE
+
+{{#INTERNATIONAL_PROJECTS}}
+### {{PROJECT_TITLE}} | {{ORGANIZATION}} | {{LOCATION}} | {{YEAR}}
+
+{{PROJECT_DESCRIPTION}}
+
+**Key Achievements**:
+{{#ACHIEVEMENTS}}
+- {{ACHIEVEMENT}}
+{{/ACHIEVEMENTS}}
+
+**Skills Demonstrated**: {{SKILLS_LIST}}
+{{/INTERNATIONAL_PROJECTS}}
+
+{{#CROSS_CULTURAL_ACTIVITIES}}
+### {{ACTIVITY_TITLE}} | {{ORGANIZATION}} | {{LOCATION}} | {{YEAR}}
+
+{{ACTIVITY_DESCRIPTION}}
+
+**Highlights**:
+{{#HIGHLIGHTS}}
+- {{HIGHLIGHT}}
+{{/HIGHLIGHTS}}
+{{/CROSS_CULTURAL_ACTIVITIES}}
+
+---
+
+## CAMPUS & RESEARCH EXPERIENCE
+
+{{#CAMPUS_ROLES}}
+### {{ROLE_TITLE}} | {{DEPARTMENT}} | {{UNIVERSITY}} | {{PERIOD}}
+
+{{ROLE_DESCRIPTION}}
+
+{{#RESPONSIBILITIES}}
+- {{RESPONSIBILITY}}
+{{/RESPONSIBILITIES}}
+{{/CAMPUS_ROLES}}
+
+---
+
+## HONORS & AWARDS
+
+{{#AWARDS}}
+- **{{AWARD_NAME}}** – {{ORGANIZATION}}, {{YEAR}}  
+  {{AWARD_DESCRIPTION}}
+{{/AWARDS}}
+
+---
+
+## EXHIBITIONS & CREATIVE WORK
+
+{{#EXHIBITIONS}}
+- **{{EXHIBITION_NAME}}** – {{VENUE}}, {{YEAR}}  
+  {{EXHIBITION_DESCRIPTION}}
+{{/EXHIBITIONS}}
+
+---
+
+## TECHNICAL SKILLS
+
+### Programming Languages
+{{#PROGRAMMING_LANGUAGES}}
+- **{{LANGUAGE}}**: {{LEVEL}} ({{YEARS}} years){{#CONTEXT}} - {{CONTEXT}}{{/CONTEXT}}
+{{/PROGRAMMING_LANGUAGES}}
+
+### Cloud Platforms & Certifications
+{{#CLOUD_PLATFORMS}}
+- **{{PLATFORM}}**: {{LEVEL}}{{#CERTIFICATIONS}} | Certified: {{CERT_LIST}}{{/CERTIFICATIONS}}
+{{/CLOUD_PLATFORMS}}
+
+### Specialized Expertise
+{{#EXPERTISE_AREAS}}
+**{{AREA_NAME}}**:
+{{#SKILLS}}
+- {{SKILL}}
+{{/SKILLS}}
+{{/EXPERTISE_AREAS}}
+
+### Frameworks & Tools
+{{#TOOL_CATEGORIES}}
+**{{CATEGORY}}**: {{TOOLS_LIST}}
+{{/TOOL_CATEGORIES}}
+
+---
+
+## PROFESSIONAL CERTIFICATIONS
+
+### Security & Cybersecurity
+{{#SECURITY_CERTS}}
+- **{{CERT_NAME}}** – {{ISSUER}}, {{YEAR}}{{#CERT_ID}} (ID: {{CERT_ID}}){{/CERT_ID}}{{#EXPIRATION}} | Valid until {{EXPIRATION}}{{/EXPIRATION}}
+{{/SECURITY_CERTS}}
+
+### Cloud Computing
+{{#CLOUD_CERTS}}
+- **{{CERT_NAME}}** – {{ISSUER}}, {{YEAR}}{{#CERT_ID}} (ID: {{CERT_ID}}){{/CERT_ID}}
+{{/CLOUD_CERTS}}
+
+### Quantum Computing
+{{#QUANTUM_CERTS}}
+- **{{CERT_NAME}}** – {{ISSUER}}, {{YEAR}}{{#CERT_ID}} (ID: {{CERT_ID}}){{/CERT_ID}}{{#EXPIRATION}} | Valid until {{EXPIRATION}}{{/EXPIRATION}}
+{{/QUANTUM_CERTS}}
+
+### Healthcare IT
+{{#HEALTHCARE_CERTS}}
+- **{{CERT_NAME}}** – {{ISSUER}}, {{YEAR}}{{#CERT_ID}} (ID: {{CERT_ID}}){{/CERT_ID}}
+{{/HEALTHCARE_CERTS}}
+
+### Additional Certifications
+{{#OTHER_CERTS}}
+- **{{CERT_NAME}}** – {{ISSUER}}, {{YEAR}}
+{{/OTHER_CERTS}}
+
+*Full certification list (45+ credentials) available in supporting documents*
+
+---
+
+## LANGUAGE PROFICIENCY
+
+- **Chinese**: Native
+- **English**: 
+  - IELTS: {{IELTS_OVERALL}} (L: {{IELTS_LISTENING}}, R: {{IELTS_READING}}, W: {{IELTS_WRITING}}, S: {{IELTS_SPEAKING}})
+  - EF SET: {{EF_SET_SCORE}}/100 ({{EF_SET_LEVEL}})
+
+---
+
+## GITHUB PROFILE HIGHLIGHTS
+
+- **{{GITHUB_COMMITS}}** commits in the last year
+- **{{GITHUB_STARS}}** stars across repositories
+- **{{GITHUB_FOLLOWERS}}** followers
+- **{{GITHUB_CONTRIBUTION_PERCENT}}%** contribution rate in collaborative projects
+
+*See detailed technical portfolio at [{{GITHUB_URL}}]({{GITHUB_URL}})*
+
+---
+
+## REFERENCES
+
+Available upon request
+
+---
+
+*Last Updated: {{UPDATE_DATE}}*
+
