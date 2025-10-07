@@ -1,0 +1,329 @@
+pipeline:
+  name: "Exchange Application Pipeline - Fixed"
+  identifier: "exchange_application_pipeline_fixed"
+  projectIdentifier: "exchange_plan"
+  orgIdentifier: "default"
+  tags: 
+    system: "exchange-application"
+    version: "1.0.0-fixed"
+  
+  properties:
+    ci:
+      codebase:
+        connectorRef: "github_connector"
+        repoName: "Exchange-Plan"
+        build: <+input>
+
+  stages:
+    - stage:
+        name: "Environment Setup"
+        identifier: "setup"
+        description: "Setup Python environment and install dependencies"
+        type: "CI"
+        spec:
+          cloneCodebase: true
+          platform:
+            os: "Linux"
+            arch: "Amd64"
+          runtime:
+            type: "Cloud"
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: "Run"
+                  name: "System Information"
+                  identifier: "system_info"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      echo "🔧 Exchange Application System Setup"
+                      echo "Date: $(date)"
+                      echo "Python version: $(python3 --version)"
+                      echo "Pip version: $(pip3 --version)"
+                      echo "Git commit: $(git rev-parse --short HEAD)"
+                      
+              - step:
+                  type: "Run"
+                  name: "Install Dependencies"
+                  identifier: "install_deps"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      echo "📦 Installing Python dependencies..."
+                      pip3 install --upgrade pip
+                      pip3 install PyYAML
+                      echo "✅ Dependencies installed"
+
+    - stage:
+        name: "Smart Configuration Setup"
+        identifier: "smart_config"
+        description: "Intelligently setup configuration files"
+        type: "CI"
+        spec:
+          cloneCodebase: true
+          platform:
+            os: "Linux"
+            arch: "Amd64"
+          runtime:
+            type: "Cloud"
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: "Run"
+                  name: "Smart File Detection and Creation"
+                  identifier: "smart_files"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      echo "🔍 Smart Configuration Setup..."
+                      
+                      echo "Current directory: $(pwd)"
+                      echo "Directory contents:"
+                      ls -la
+                      
+                      echo ""
+                      echo "Available .yml files:"
+                      find . -name "*.yml" -type f 2>/dev/null || echo "No .yml files found"
+                      
+                      if [ -d "source_data" ]; then
+                        echo ""
+                        echo "source_data directory contents:"
+                        ls -la source_data/
+                      fi
+                      
+                      echo ""
+                      echo "🔧 Creating/Configuring required files..."
+                      
+                      # Create my_profile.yml if missing
+                      if [ ! -f "my_profile.yml" ]; then
+                        echo "Creating my_profile.yml..."
+                        cat > my_profile.yml << 'EOF'
+personal_info:
+  name: "Student Name"
+  current_university: "National Chengchi University"
+  current_major: "Digital Content and Technologies"
+  
+academic_info:
+  gpa: 3.96
+  gpa_scale: 4.3
+  ielts_score: 7.5
+  
+completed_courses:
+  - "Advanced Programming"
+  - "Data Structures"
+  - "Software Engineering"
+  - "Digital Content Management"
+  
+target_programs:
+  - "Computer Science"
+  - "Software Engineering"
+  - "Information Technology"
+EOF
+                        echo "✅ Created my_profile.yml"
+                      else
+                        echo "✅ my_profile.yml already exists"
+                      fi
+                      
+                      # Use schools.yml if available, otherwise create university options
+                      if [ -f "source_data/schools.yml" ]; then
+                        echo "✅ Using existing schools.yml as university options"
+                        UNIV_FILE="source_data/schools.yml"
+                      else
+                        echo "Creating university_level_options.yml..."
+                        mkdir -p source_data
+                        cat > source_data/university_level_options.yml << 'EOF'
+universities:
+  - school_name: "Stanford University"
+    school_id: "stanford"
+    location: "California, USA"
+    gpa_requirement: 3.0
+    ielts_requirement: 7.0
+    notable_courses:
+      - "Advanced Computer Security"
+      - "Machine Learning"
+      - "Quantum Computing"
+  - school_name: "MIT"
+    school_id: "mit"
+    location: "Massachusetts, USA"
+    gpa_requirement: 3.5
+    ielts_requirement: 7.0
+    notable_courses:
+      - "Advanced Programming"
+      - "Data Structures"
+      - "Software Engineering"
+EOF
+                        UNIV_FILE="source_data/university_level_options.yml"
+                        echo "✅ Created university_level_options.yml"
+                      fi
+                      
+                      # Create college options if missing
+                      if [ ! -f "source_data/college_level_options.yml" ]; then
+                        echo "Creating college_level_options.yml..."
+                        cat > source_data/college_level_options.yml << 'EOF'
+colleges:
+  - school_name: "Community College Example"
+    school_id: "community_college"
+    location: "Various, USA"
+    gpa_requirement: 2.5
+    ielts_requirement: 6.0
+    notable_courses:
+      - "Introduction to Programming"
+      - "Computer Science Basics"
+EOF
+                        echo "✅ Created college_level_options.yml"
+                      else
+                        echo "✅ college_level_options.yml already exists"
+                      fi
+                      
+                      # Validate all files
+                      echo ""
+                      echo "🔍 Validating configuration files..."
+                      
+                      python3 -c "import yaml; yaml.safe_load(open('my_profile.yml'))"
+                      echo "✅ my_profile.yml is valid"
+                      
+                      python3 -c "import yaml; yaml.safe_load(open('$UNIV_FILE'))"
+                      echo "✅ $UNIV_FILE is valid"
+                      
+                      python3 -c "import yaml; yaml.safe_load(open('source_data/college_level_options.yml'))"
+                      echo "✅ college_level_options.yml is valid"
+                      
+                      echo ""
+                      echo "🎉 Configuration setup completed successfully!"
+
+    - stage:
+        name: "Validation and Generation"
+        identifier: "validation_generation"
+        description: "Validate eligibility and generate application documents"
+        type: "CI"
+        spec:
+          cloneCodebase: true
+          platform:
+            os: "Linux"
+            arch: "Amd64"
+          runtime:
+            type: "Cloud"
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: "Run"
+                  name: "Run Eligibility Validation"
+                  identifier: "run_validation"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      echo "✅ Starting eligibility validation..."
+                      echo "Current directory: $(pwd)"
+                      export PYTHONPATH="${PYTHONPATH}:$(pwd)"
+                      
+                      if [ -f "intelligence_gathering/validator.py" ]; then
+                        echo "🔍 Running application eligibility validator..."
+                        python3 intelligence_gathering/validator.py
+                        
+                        if [ -f "final_applications/eligibility_report.md" ]; then
+                          echo "✅ Validation completed successfully"
+                          head -20 final_applications/eligibility_report.md
+                        else
+                          echo "❌ Validation failed - no report generated"
+                          exit 1
+                        fi
+                      else
+                        echo "❌ Validator script not found"
+                        exit 1
+                      fi
+                      
+              - step:
+                  type: "Run"
+                  name: "Generate Application Documents"
+                  identifier: "generate_docs"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      echo "📝 Generating application documents..."
+                      echo "Current directory: $(pwd)"
+                      export PYTHONPATH="${PYTHONPATH}:$(pwd)"
+                      
+                      if [ -f "build_scripts/generate_docs.py" ]; then
+                        echo "📝 Running document generator..."
+                        python3 build_scripts/generate_docs.py
+                        
+                        # Check results
+                        study_plans=$(find final_applications -name "*_study_plan_*.md" 2>/dev/null | wc -l)
+                        cv_docs=$(find final_applications -name "*_cv_*.md" 2>/dev/null | wc -l)
+                        
+                        echo "📊 Generated: $study_plans study plans, $cv_docs CV documents"
+                        
+                        if [ -f "final_applications/dashboard.md" ]; then
+                          echo "✅ Dashboard generated successfully"
+                        else
+                          echo "⚠️ Dashboard not generated"
+                        fi
+                      else
+                        echo "❌ Document generator not found"
+                        exit 1
+                      fi
+
+    - stage:
+        name: "Final Summary"
+        identifier: "final_summary"
+        description: "Final quality check and summary"
+        type: "CI"
+        spec:
+          cloneCodebase: true
+          platform:
+            os: "Linux"
+            arch: "Amd64"
+          runtime:
+            type: "Cloud"
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: "Run"
+                  name: "Final Summary"
+                  identifier: "final_summary"
+                  spec:
+                    shell: "Bash"
+                    command: |
+                      echo "🎉 Exchange Application Pipeline Completed!"
+                      echo "=========================================="
+                      echo "Generated: $(date)"
+                      echo "Location: final_applications/"
+                      
+                      if [ -d "final_applications" ]; then
+                        echo "Files generated:"
+                        ls -la final_applications/
+                        echo ""
+                        echo "Document counts:"
+                        find final_applications -name "*.md" -type f | wc -l | xargs echo "Total documents:"
+                        find final_applications -name "*_study_plan_*.md" -type f | wc -l | xargs echo "Study plans:"
+                        find final_applications -name "*_cv_*.md" -type f | wc -l | xargs echo "CV documents:"
+                      fi
+                      
+                      echo "=========================================="
+                      echo "Pipeline completed successfully!"
+
+  variables:
+    - name: "profile_file"
+      type: "String"
+      value: "my_profile.yml"
+    - name: "output_directory"
+      type: "String"
+      value: "final_applications"
+
+  notificationRules:
+    - name: "Pipeline Success"
+      identifier: "success_notification"
+      pipelineEvents:
+        - type: "PipelineSuccess"
+      notificationMethod:
+        type: "Email"
+        spec:
+          recipients:
+            - "admin@dennisleehappy.org"
+          subject: "✅ Exchange Application Pipeline Completed"
+          body: "The Exchange Application Pipeline has completed successfully."
+      enabled: true
