@@ -22,6 +22,7 @@ pipeline:
               type: "Pool"
               spec:
                 poolName: "default-pool"
+              platform:
                 os: "Linux"
                 arch: "Amd64"
         

@@ -22,8 +22,6 @@ pipeline:
               connectorRef: "account.harnessImage"
               namespace: "harness-delegate"
               labels: {}
-              annotations: {}
-              serviceAccountName: "harness-delegate-account"
         
           execution:
             steps:

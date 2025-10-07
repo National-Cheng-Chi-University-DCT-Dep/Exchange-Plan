@@ -20,6 +20,9 @@ pipeline:
             type: "VM"
             spec:
               type: "HostedVm"
+              platform:
+                os: "Linux"
+                arch: "Amd64"
         
           execution:
             steps:
