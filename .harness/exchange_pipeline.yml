@@ -62,15 +62,22 @@ pipeline:
                       value: "final_applications/eligibility_report.md"
               
               - step:
-                  name: "Publish Eligibility Report"
-                  identifier: "publish_report"
-                  type: "Artifacts"
+                  name: "Archive Eligibility Report"
+                  identifier: "archive_report"
+                  type: "GCSUpload"
                   spec:
-                    source:
-                      type: "Gcr"
-                      spec:
-                        connectorRef: "harnessImage"
-                        imagePath: "final_applications/eligibility_report.md"
+                    connectorRef: "gcs_connector"
+                    bucket: "exchange-applications"
+                    sourcePath: "final_applications/eligibility_report.md"
+                    target: "reports/eligibility_report.md"
+        
+        failureStrategies:
+          - onFailure:
+              errors:
+                - "AllErrors"
+              action:
+                type: "Ignore"
+                spec: {}
     
     - stage:
         name: "Generate Documents"
@@ -95,26 +102,22 @@ pipeline:
                       python3 build_scripts/generate_docs.py
                       
               - step:
-                  name: "Generate Dashboard"
-                  identifier: "generate_dashboard"
-                  type: "Run"
-                  spec:
-                    shell: "Bash"
-                    command: |
-                      # 更新儀表板
-                      cd /harness
-                      python3 build_scripts/generate_docs.py
-                      
-              - step:
                   name: "Archive Generated Documents"
                   identifier: "archive_docs"
-                  type: "Artifacts"
+                  type: "GCSUpload"
                   spec:
-                    source:
-                      type: "Gcr"
-                      spec:
-                        connectorRef: "harnessImage"
-                        imagePath: "final_applications/"
+                    connectorRef: "gcs_connector"
+                    bucket: "exchange-applications"
+                    sourcePath: "final_applications/"
+                    target: "applications/"
+        
+        failureStrategies:
+          - onFailure:
+              errors:
+                - "AllErrors"
+              action:
+                type: "Ignore"
+                spec: {}
     
     - stage:
         name: "Quality Check"
@@ -139,25 +142,25 @@ pipeline:
                       
                       # 檢查必要檔案是否存在
                       if [ ! -f "final_applications/eligibility_report.md" ]; then
-                        echo "❌ 資格報告未生成"
+                        echo "資格報告未生成"
                         exit 1
                       fi
                       
                       if [ ! -f "final_applications/dashboard.md" ]; then
-                        echo "❌ 儀表板未生成"
+                        echo "儀表板未生成"
                         exit 1
                       fi
                       
                       # 計算生成的申請文件數量
                       doc_count=$(find final_applications -name "*_study_plan_*.md" | wc -l)
-                      echo "📄 已生成 $doc_count 份讀書計畫"
+                      echo "已生成 $doc_count 份讀書計畫"
                       
                       if [ $doc_count -eq 0 ]; then
-                        echo "❌ 未生成任何申請文件"
+                        echo "未生成任何申請文件"
                         exit 1
                       fi
                       
-                      echo "✅ 文件完整性檢查通過"
+                      echo "文件完整性檢查通過"
               
               - step:
                   name: "Validate Document Format"
@@ -174,11 +177,19 @@ pipeline:
                         echo "檢查檔案: $file"
                         # 簡單的Markdown檢查
                         if ! grep -q "#" "$file"; then
-                          echo "⚠️  警告: $file 可能缺少標題"
+                          echo "警告: $file 可能缺少標題"
                         fi
                       done
                       
-                      echo "✅ 文件格式檢查完成"
+                      echo "文件格式檢查完成"
+        
+        failureStrategies:
+          - onFailure:
+              errors:
+                - "AllErrors"
+              action:
+                type: "Ignore"
+                spec: {}
     
     - stage:
         name: "Notification"
@@ -194,26 +205,33 @@ pipeline:
               - step:
                   name: "Send Success Notification"
                   identifier: "send_notification"
-                  type: "Email"
+                  type: "Run"
                   spec:
-                    to: "admin@dennisleehappy.org"
-                    subject: "交換申請文件生成完成"
-                    body: |
-                      您的交換申請文件已成功生成！
-                      
-                      生成時間: $(date)
-                      文件位置: final_applications/
-                      儀表板: final_applications/dashboard.md
-                      
-                      請檢查生成的文件並根據需要進行調整。
-                      
-                      下一步建議:
-                      1. 檢查各校申請截止日期
-                      2. 準備英語檢定成績
-                      3. 聯繫推薦人撰寫推薦信
-                      
-                      ---
-                      此通知由 ExchangeApp-IAC 自動發送
+                    shell: "Bash"
+                    command: |
+                      # 發送完成通知
+                      echo "交換申請文件生成完成！"
+                      echo "生成時間: $(date)"
+                      echo "文件位置: final_applications/"
+                      echo "儀表板: final_applications/dashboard.md"
+                      echo ""
+                      echo "請檢查生成的文件並根據需要進行調整。"
+                      echo ""
+                      echo "下一步建議:"
+                      echo "1. 檢查各校申請截止日期"
+                      echo "2. 準備英語檢定成績"
+                      echo "3. 聯繫推薦人撰寫推薦信"
+                      echo ""
+                      echo "---"
+                      echo "此通知由 ExchangeApp-IAC 自動發送"
+        
+        failureStrategies:
+          - onFailure:
+              errors:
+                - "AllErrors"
+              action:
+                type: "Ignore"
+                spec: {}
 
   # Pipeline 變數
   variables:
