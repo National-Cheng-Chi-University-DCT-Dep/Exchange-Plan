@@ -2,7 +2,31 @@
 
 ## 📋 檔案說明
 
-### 1. `exchange_pipeline.yml` (完整版)
+### 1. `exchange_pipeline_minimal.yml` (最簡版) ⭐ **推薦**
+- **用途**: 使用Harness託管的基礎設施，最簡單的配置
+- **適用於**: 快速開始和測試
+- **特點**:
+  - 使用 `KubernetesHosted` 基礎設施
+  - 不需要額外的連接器配置
+  - 適合初學者
+
+### 2. `exchange_pipeline_docker.yml` (Docker版)
+- **用途**: 使用Docker容器執行Pipeline
+- **適用於**: 需要特定環境或依賴的情況
+- **特點**:
+  - 使用 `python:3.11-slim` Docker映像
+  - 完全隔離的執行環境
+  - 需要配置Docker連接器
+
+### 3. `exchange_pipeline_ubuntu.yml` (Ubuntu VM版)
+- **用途**: 使用Ubuntu虛擬機器執行
+- **適用於**: 需要完整Linux環境的情況
+- **特點**:
+  - 使用VM Pool基礎設施
+  - 需要配置VM Pool和連接器
+  - 適合需要系統級操作的情況
+
+### 4. `exchange_pipeline.yml` (完整版)
 - **用途**: 完整的CI/CD流程，包含多個階段和複雜的配置
 - **適用於**: 生產環境或需要詳細控制的情況
 - **特點**: 
@@ -10,24 +34,24 @@
   - 包含檔案上傳和存檔功能
   - 詳細的錯誤處理和通知機制
 
-### 2. `exchange_pipeline_simple.yml` (簡化版) ⭐ **推薦**
-- **用途**: 簡化的CI/CD流程，適合快速部署和測試
-- **適用於**: 開發環境或快速原型驗證
-- **特點**:
-  - 單一階段執行所有步驟
-  - 簡化的配置，易於理解和修改
-  - 跨平台兼容 (支援 python3 和 python)
-
 ## 🚀 使用建議
 
-### 對於初學者或快速開始
-建議使用 `exchange_pipeline_simple.yml`，因為它：
-- 配置簡單，容易理解
-- 減少了配置錯誤的可能性
-- 適合本地測試和開發
+### 對於初學者或快速開始 ⭐
+**強烈建議使用 `exchange_pipeline_minimal.yml`**，因為它：
+- 使用Harness託管的基礎設施，無需額外配置
+- 配置最簡單，錯誤率最低
+- 適合快速測試和驗證
 
-### 對於生產環境
-如果需要更詳細的控制和監控，可以使用 `exchange_pipeline.yml`
+### 對於特定環境需求
+- **需要特定Python版本**: 使用 `exchange_pipeline_docker.yml`
+- **需要系統級操作**: 使用 `exchange_pipeline_ubuntu.yml`
+- **需要詳細控制**: 使用 `exchange_pipeline.yml`
+
+### 配置步驟
+1. 選擇適合的Pipeline配置檔案
+2. 在Harness中創建新的Pipeline
+3. 將選定的YAML內容貼到Pipeline配置中
+4. 保存並執行Pipeline
 
 ## 🔧 配置要點
 
