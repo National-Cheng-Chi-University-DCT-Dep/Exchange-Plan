@@ -15,6 +15,16 @@ pipeline:
         description: "驗證資格並生成申請文件"
         
         spec:
+          # 基礎設施配置
+          infrastructure:
+            type: "Cloud"
+            spec:
+              type: "KubernetesGcp"
+              spec:
+                connectorRef: "account.gcp_connector"
+                namespace: "harness-delegate"
+                labels: {}
+        
           execution:
             steps:
               - step:
