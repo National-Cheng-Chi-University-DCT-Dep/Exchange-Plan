@@ -1,4 +1,4 @@
-# Harness Pipeline 配置檔案 (Docker 版本)
+# Harness Pipeline 配置檔案 (最終簡化版)
 # 交換申請自動化流程
 
 pipeline:
@@ -15,17 +15,16 @@ pipeline:
         description: "驗證資格並生成申請文件"
         
         spec:
-          # 基礎設施配置 - 使用 Docker
+          # 基礎設施配置 - 使用 VM
           infrastructure:
-            type: "Docker"
+            type: "VM"
             spec:
-              connectorRef: "account.harnessImage"
-              image: "python:3.11-slim"
+              type: "Pool"
+              spec:
+                poolName: "ubuntu_x86_64"
               platform:
                 os: "Linux"
                 arch: "Amd64"
-              privileged: false
-              runAsUser: "1000"
         
           execution:
             steps:
@@ -36,18 +35,12 @@ pipeline:
                   spec:
                     shell: "Bash"
                     command: |
-                      # 更新套件管理器
-                      apt-get update
-                      
-                      # 安裝必要的系統套件
-                      apt-get install -y git curl
-                      
                       # 檢查Python環境
-                      python3 --version
-                      pip3 --version
+                      python3 --version || python --version
+                      pip3 --version || pip --version
                       
-                      # 安裝Python依賴套件
-                      pip3 install pyyaml
+                      # 安裝必要套件
+                      pip3 install pyyaml || pip install pyyaml
                       
               - step:
                   name: "Run Eligibility Validation"
@@ -57,7 +50,7 @@ pipeline:
                     shell: "Bash"
                     command: |
                       # 執行資格驗證腳本
-                      python3 intelligence_gathering/validator.py
+                      python3 intelligence_gathering/validator.py || python intelligence_gathering/validator.py
                       
               - step:
                   name: "Generate Application Documents"
@@ -67,7 +60,7 @@ pipeline:
                     shell: "Bash"
                     command: |
                       # 執行文件生成腳本
-                      python3 build_scripts/generate_docs.py
+                      python3 build_scripts/generate_docs.py || python build_scripts/generate_docs.py
                       
               - step:
                   name: "Quality Check"

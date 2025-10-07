@@ -1,4 +1,4 @@
-# Harness Pipeline 配置檔案 (Docker 版本)
+# Harness Pipeline 配置檔案 (最終版)
 # 交換申請自動化流程
 
 pipeline:
@@ -24,8 +24,6 @@ pipeline:
               platform:
                 os: "Linux"
                 arch: "Amd64"
-              privileged: false
-              runAsUser: "1000"
         
           execution:
             steps:

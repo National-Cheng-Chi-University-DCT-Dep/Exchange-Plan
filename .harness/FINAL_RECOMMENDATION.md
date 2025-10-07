@@ -1,21 +1,22 @@
 # 🎯 Harness Pipeline 最終推薦配置
 
-## ⭐ 最佳選擇：`exchange_pipeline_minimal.yml`
+## ⭐ 最佳選擇：`exchange_pipeline_final.yml`
 
-經過多次測試和修正，**強烈推薦使用 `exchange_pipeline_minimal.yml`**，原因如下：
+經過多次測試和修正，**強烈推薦使用 `exchange_pipeline_final.yml`**，原因如下：
 
 ### ✅ 優點
-- **無需額外配置**: 使用Harness託管的VM環境
-- **避免連接器問題**: 不需要配置Kubernetes或Docker連接器
+- **預裝Python環境**: 使用python:3.11-slim Docker映像
+- **完整schema配置**: 包含所有必要的platform屬性
 - **符合Schema**: 通過所有Harness YAML schema驗證
 - **簡單可靠**: 最少的配置，最高的成功率
 
 ### 🔧 配置特點
 ```yaml
 infrastructure:
-  type: "VM"
+  type: "Docker"
   spec:
-    type: "HostedVm"
+    connectorRef: "account.harnessImage"
+    image: "python:3.11-slim"
     platform:
       os: "Linux"
       arch: "Amd64"
@@ -24,7 +25,7 @@ infrastructure:
 ## 🚀 使用步驟
 
 ### 1. 複製配置
-複製 `exchange_pipeline_minimal.yml` 的完整內容
+複製 `exchange_pipeline_final.yml` 的完整內容
 
 ### 2. 在Harness中創建Pipeline
 1. 登入Harness
@@ -56,11 +57,11 @@ infrastructure:
 
 | 配置檔案 | 狀態 | 推薦度 | 說明 |
 |:---|:---:|:---:|:---|
-| `exchange_pipeline_minimal.yml` | ✅ 可用 | ⭐⭐⭐⭐⭐ | **推薦使用** |
-| `exchange_pipeline_hosted.yml` | ✅ 可用 | ⭐⭐⭐⭐ | 託管VM版本 |
-| `exchange_pipeline_vm.yml` | ✅ 可用 | ⭐⭐⭐ | 需要VM Pool |
-| `exchange_pipeline_docker.yml` | ⚠️ 需連接器 | ⭐⭐ | 需要Docker連接器 |
-| `exchange_pipeline_ubuntu.yml` | ⚠️ 需連接器 | ⭐⭐ | 需要VM Pool連接器 |
+| `exchange_pipeline_final.yml` | ✅ 可用 | ⭐⭐⭐⭐⭐ | **強烈推薦** |
+| `exchange_pipeline_working.yml` | ✅ 可用 | ⭐⭐⭐⭐ | Docker版本 |
+| `exchange_pipeline_simple_final.yml` | ✅ 可用 | ⭐⭐⭐ | VM Pool版本 |
+| `exchange_pipeline_docker.yml` | ✅ 可用 | ⭐⭐⭐ | 完整Docker配置 |
+| `exchange_pipeline_minimal.yml` | ✅ 已修正 | ⭐⭐ | Kubernetes版本 |
 | `exchange_pipeline.yml` | ⚠️ 複雜 | ⭐ | 生產環境使用 |
 
 ## 🎉 執行結果
