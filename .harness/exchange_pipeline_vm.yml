@@ -1,4 +1,4 @@
-# Harness Pipeline 配置檔案 (Docker 版本)
+# Harness Pipeline 配置檔案 (VM 版本)
 # 交換申請自動化流程
 
 pipeline:
@@ -15,14 +15,15 @@ pipeline:
         description: "驗證資格並生成申請文件"
         
         spec:
-          # 基礎設施配置 - 使用 Docker
+          # 基礎設施配置 - 使用 VM
           infrastructure:
-            type: "Docker"
+            type: "VM"
             spec:
-              connectorRef: "account.docker_connector"
-              image: "python:3.11-slim"
-              privileged: false
-              runAsUser: "1000"
+              type: "Pool"
+              spec:
+                poolName: "default-pool"
+                os: "Linux"
+                arch: "Amd64"
         
           execution:
             steps:
@@ -33,17 +34,11 @@ pipeline:
                   spec:
                     shell: "Bash"
                     command: |
-                      # 更新套件管理器
-                      apt-get update
-                      
-                      # 安裝必要的系統套件
-                      apt-get install -y git curl
-                      
                       # 檢查Python環境
                       python3 --version
                       pip3 --version
                       
-                      # 安裝Python依賴套件
+                      # 安裝必要套件
                       pip3 install pyyaml
                       
               - step:

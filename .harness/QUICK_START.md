@@ -7,9 +7,10 @@
 
 | 配置檔案 | 推薦程度 | 適用情況 |
 |:---|:---:|:---|
-| `exchange_pipeline_minimal.yml` | ⭐⭐⭐⭐⭐ | 初學者、快速測試 |
-| `exchange_pipeline_docker.yml` | ⭐⭐⭐⭐ | 需要特定Python環境 |
-| `exchange_pipeline_ubuntu.yml` | ⭐⭐⭐ | 需要完整Linux環境 |
+| `exchange_pipeline_hosted.yml` | ⭐⭐⭐⭐⭐ | 初學者、快速測試 |
+| `exchange_pipeline_vm.yml` | ⭐⭐⭐⭐ | 需要VM基礎設施 |
+| `exchange_pipeline_docker.yml` | ⭐⭐⭐ | 需要特定Python環境 |
+| `exchange_pipeline_ubuntu.yml` | ⭐⭐ | 需要完整Linux環境 |
 | `exchange_pipeline.yml` | ⭐⭐ | 生產環境、複雜需求 |
 
 ### 步驟 2: 在Harness中創建Pipeline
@@ -30,38 +31,41 @@
 2. 點擊 **Run** 執行Pipeline
 3. 等待執行完成並查看結果
 
-## ⚡ 推薦配置：`exchange_pipeline_minimal.yml`
+## ⚡ 推薦配置：`exchange_pipeline_hosted.yml`
 
 這是**最簡單**的配置，適合大多數使用者：
 
 ```yaml
 # 使用 Harness 託管基礎設施
 infrastructure:
-  type: "Cloud"
+  type: "VM"
   spec:
-    type: "KubernetesHosted"
+    type: "HostedVm"
 ```
 
 ### 優點：
 - ✅ 無需額外配置連接器
-- ✅ 使用Harness託管的Kubernetes環境
+- ✅ 使用Harness託管的VM環境
 - ✅ 自動處理基礎設施管理
 - ✅ 適合快速測試和驗證
 
 ## 🔧 故障排除
 
 ### 問題 1: "Infrastructure or runtime field is mandatory"
-**解決方案**: 確保Pipeline配置中包含基礎設施配置，使用 `exchange_pipeline_minimal.yml`
+**解決方案**: 確保Pipeline配置中包含基礎設施配置，使用 `exchange_pipeline_hosted.yml`
 
-### 問題 2: "Connector not found"
-**解決方案**: 使用 `exchange_pipeline_minimal.yml` 避免需要額外連接器
+### 問題 2: "Missing property platform" 或 "DockerInfraSpec"
+**解決方案**: 使用 `exchange_pipeline_hosted.yml` 或 `exchange_pipeline_vm.yml` 避免Docker配置問題
 
-### 問題 3: "Python command not found"
+### 問題 3: "Connector not found"
+**解決方案**: 使用 `exchange_pipeline_hosted.yml` 避免需要額外連接器
+
+### 問題 4: "Python command not found"
 **解決方案**: 
 - 使用 `exchange_pipeline_docker.yml` (預裝Python)
 - 或在Setup Environment步驟中安裝Python
 
-### 問題 4: "Permission denied"
+### 問題 5: "Permission denied"
 **解決方案**: 檢查Harness帳戶權限和專案設置
 
 ## 📊 執行結果
