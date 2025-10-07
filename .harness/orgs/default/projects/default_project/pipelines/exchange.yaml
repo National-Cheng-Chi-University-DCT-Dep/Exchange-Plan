@@ -96,51 +96,41 @@ pipeline:
                         ls -la
                       fi
 
-                      # Function to find file in current directory or subdirectories
-                      find_config_file() {
-                        local filename="$1"
-                        if [ -f "$filename" ]; then
-                          echo "$filename"
-                          return 0
-                        fi
-                        
-                        # Search in subdirectories
-                        local found=$(find . -name "$filename" -type f 2>/dev/null | head -1)
-                        if [ -n "$found" ]; then
-                          echo "$found"
-                          return 0
-                        fi
-                        
-                        return 1
-                      }
-
                       # Check and locate required files
                       echo "🔍 Locating configuration files..."
 
-                      PROFILE_FILE=$(find_config_file "my_profile.yml")
-                      if [ -z "$PROFILE_FILE" ]; then
-                        echo "❌ my_profile.yml not found anywhere"
+                      # Direct file checks (simpler approach)
+                      if [ -f "my_profile.yml" ]; then
+                        PROFILE_FILE="my_profile.yml"
+                        echo "✅ Found profile file: $PROFILE_FILE"
+                      else
+                        echo "❌ my_profile.yml not found in current directory"
                         echo "Available .yml files:"
                         find . -name "*.yml" -type f 2>/dev/null || echo "No .yml files found"
                         exit 1
                       fi
-                      echo "✅ Found profile file: $PROFILE_FILE"
 
-                      UNIV_FILE=$(find_config_file "university_level_options.yml")
-                      if [ -z "$UNIV_FILE" ]; then
-                        echo "❌ university_level_options.yml not found"
+                      if [ -f "source_data/university_level_options.yml" ]; then
+                        UNIV_FILE="source_data/university_level_options.yml"
+                        echo "✅ Found university options file: $UNIV_FILE"
+                      else
+                        echo "❌ university_level_options.yml not found in source_data/"
                         echo "Searching in source_data directories:"
                         find . -name "source_data" -type d -exec ls -la {} \; 2>/dev/null || echo "No source_data directories found"
+                        if [ -d "source_data" ]; then
+                          echo "source_data directory contents:"
+                          ls -la source_data/ 2>/dev/null || echo "Cannot list source_data contents"
+                        fi
                         exit 1
                       fi
-                      echo "✅ Found university options file: $UNIV_FILE"
 
-                      COLLEGE_FILE=$(find_config_file "college_level_options.yml")
-                      if [ -z "$COLLEGE_FILE" ]; then
-                        echo "❌ college_level_options.yml not found"
+                      if [ -f "source_data/college_level_options.yml" ]; then
+                        COLLEGE_FILE="source_data/college_level_options.yml"
+                        echo "✅ Found college options file: $COLLEGE_FILE"
+                      else
+                        echo "❌ college_level_options.yml not found in source_data/"
                         exit 1
                       fi
-                      echo "✅ Found college options file: $COLLEGE_FILE"
 
                       # Validate YAML syntax
                       echo "🔍 Validating YAML syntax..."
@@ -400,6 +390,9 @@ pipeline:
                     command: |
                       echo "📁 Organizing generated artifacts..."
 
+                      # Source environment variables from previous step
+                      source ~/.bashrc 2>/dev/null || true
+
                       # Navigate to the correct directory if needed
                       if [ -d "Exchange-Plan" ]; then
                         echo "Navigating to Exchange-Plan directory..."
@@ -408,42 +401,70 @@ pipeline:
 
                       echo "Current directory: $(pwd)"
 
-                      # Create artifacts directory
-                      mkdir -p artifacts/reports artifacts/documents
+                      # Create artifacts directory structure
+                      echo "Creating artifact directory structure..."
+                      mkdir -p artifacts/reports artifacts/documents artifacts/data
 
-                      # Copy reports
+                      # Copy reports with better error handling
+                      echo "📋 Copying reports..."
                       if [ -f "final_applications/eligibility_report.md" ]; then
                         cp final_applications/eligibility_report.md artifacts/reports/
                         echo "✅ Eligibility report archived"
+                      else
+                        echo "⚠️ Eligibility report not found"
                       fi
 
                       if [ -f "final_applications/dashboard.md" ]; then
                         cp final_applications/dashboard.md artifacts/reports/
                         echo "✅ Dashboard archived"
+                      else
+                        echo "⚠️ Dashboard not found"
                       fi
 
-                      # Copy application documents
-                      find final_applications -name "*.md" -path "*/*" | while read file; do
+                      # Copy application documents with better handling
+                      echo "📄 Copying application documents..."
+                      doc_count=0
+                      find final_applications -name "*.md" -type f | while read file; do
                         if [ -f "$file" ]; then
                           cp "$file" artifacts/documents/
+                          doc_count=$((doc_count + 1))
                         fi
                       done
 
-                      # Create manifest
+                      # Count actual copied files
+                      actual_docs=$(ls artifacts/documents/*.md 2>/dev/null | wc -l)
+                      echo "✅ Copied $actual_docs application documents"
+
+                      # Create comprehensive manifest
+                      echo "📝 Creating manifest..."
                       cat > artifacts/MANIFEST.txt << EOF
                       Exchange Application Pipeline
                       Generated: $(date)
-                      Commit: $(git rev-parse --short HEAD)
+                      Commit: $(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
                       Pipeline ID: <+pipeline.sequenceId>
+                      Working Directory: $(pwd)
 
-                      Files Generated:
+                      File Summary:
                       EOF
 
+                      # Add file counts to manifest
+                      echo "  Reports: $(ls artifacts/reports/*.md 2>/dev/null | wc -l)" >> artifacts/MANIFEST.txt
+                      echo "  Documents: $(ls artifacts/documents/*.md 2>/dev/null | wc -l)" >> artifacts/MANIFEST.txt
+                      echo "  Data Files: $(ls artifacts/data/* 2>/dev/null | wc -l)" >> artifacts/MANIFEST.txt
+                      echo "" >> artifacts/MANIFEST.txt
+
+                      echo "All Files:" >> artifacts/MANIFEST.txt
                       find artifacts -type f | sort >> artifacts/MANIFEST.txt
 
+                      # Final summary
                       echo "📊 Artifact Summary:"
                       echo "  Reports: $(ls artifacts/reports/*.md 2>/dev/null | wc -l)"
                       echo "  Documents: $(ls artifacts/documents/*.md 2>/dev/null | wc -l)"
+                      echo "  Total Files: $(find artifacts -type f | wc -l)"
+
+                      # Show manifest
+                      echo "📋 Manifest created:"
+                      cat artifacts/MANIFEST.txt
   variables:
     - name: profile_file
       type: String
