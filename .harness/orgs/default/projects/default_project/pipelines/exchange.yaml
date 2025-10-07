@@ -9,7 +9,7 @@ pipeline:
   properties:
     ci:
       codebase:
-        connectorRef: github_connector
+        connectorRef: gitconnector
         repoName: Exchange-Plan
         build: <+input>
   stages:
