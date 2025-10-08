@@ -192,18 +192,7 @@ jobs:
             else
               echo "Creating basic index.html"
               mkdir -p docs
-              echo '<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exchange Application System</title>
-</head>
-<body>
-    <h1>Exchange Application System</h1>
-    <p>Documents generated successfully!</p>
-</body>
-</html>' > docs/index.html
+              echo "<!DOCTYPE html><html lang=\"zh-TW\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Exchange Application System</title></head><body><h1>Exchange Application System</h1><p>Documents generated successfully!</p></body></html>" > docs/index.html
             fi
           fi
 
