@@ -1,0 +1,18 @@
+# Exchange Plan - Basic Dependencies
+# 基本依賴套件，用於GitHub Actions pip cache
+
+PyYAML>=6.0
+markdown>=3.4
+python-dateutil>=2.8.0
+
+# PDF generation (may require additional system dependencies)
+Pillow>=9.0.0
+reportlab>=4.0.0
+weasyprint>=59.0
+img2pdf>=0.4.4
+
+# HTML/CSS processing
+cssselect2>=0.7.0
+html5lib>=1.1
+tinycss2>=1.2.0
+fonttools>=4.38.0

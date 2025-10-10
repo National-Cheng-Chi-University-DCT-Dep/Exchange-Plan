@@ -37,7 +37,7 @@ on:
 
 jobs:
   generate-pdfs:
-    name: 🔄 Generate Application PDFs
+    name: Generate Application PDFs
     runs-on: ubuntu-latest
     
     permissions:
@@ -45,19 +45,20 @@ jobs:
       pull-requests: write
     
     steps:
-      - name: 📥 Checkout Repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: 🐍 Setup Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
           cache: 'pip'
       
-      - name: 📦 Install System Dependencies
+      - name: Install System Dependencies
+        if: ${{ !cancelled() }}
         run: |
           # 安裝WeasyPrint所需的系統套件
           sudo apt-get update
@@ -73,65 +74,75 @@ jobs:
             fonts-liberation \
             fonts-noto-cjk
           
-          echo "✅ 系統依賴安裝完成"
+          echo "[SUCCESS] 系統依賴安裝完成"
       
-      - name: 📚 Install Python Dependencies
+      - name: Install Python Dependencies
+        if: ${{ !cancelled() }}
         run: |
+          echo "[INSTALL] 開始安裝Python依賴套件..."
           python -m pip install --upgrade pip
-          pip install -r requirements-pdf.txt
-          echo "✅ Python套件安裝完成"
-      
-      - name: 🔍 Validate Environment
-        run: |
-          echo "🔧 驗證PDF生成環境..."
-          python -c "import weasyprint; print('✅ WeasyPrint OK')"
-          python -c "import reportlab; print('✅ ReportLab OK')"  
-          python -c "import PIL; print('✅ Pillow OK')"
-          python -c "import yaml; print('✅ PyYAML OK')"
-          python -c "import markdown; print('✅ Markdown OK')"
           
-          echo "📂 檢查必要檔案..."
+          echo "[INSTALL] 安裝來自 requirements.txt 的套件..."
+          pip install -r requirements.txt
+          
+          echo "[SUCCESS] Python套件安裝完成"
+      
+      - name: Validate Environment
+        if: ${{ !cancelled() }}
+        run: |
+          echo "[VALIDATE] 驗證PDF生成環境..."
+          
+          echo "測試套件導入..."
+          python -c "import weasyprint; print('[SUCCESS] WeasyPrint OK')" || echo "[ERROR] WeasyPrint failed"
+          python -c "import reportlab; print('[SUCCESS] ReportLab OK')" || echo "[ERROR] ReportLab failed" 
+          python -c "import PIL; print('[SUCCESS] Pillow OK')" || echo "[ERROR] Pillow failed"
+          python -c "import yaml; print('[SUCCESS] PyYAML OK')" || echo "[ERROR] PyYAML failed"
+          python -c "import markdown; print('[SUCCESS] Markdown OK')" || echo "[ERROR] Markdown failed"
+          
+          echo "[CHECK] 檢查必要檔案..."
           ls -la my_profile.yml
           ls -la build_scripts/generate_pdfs.py
           
           if [ -d "final_applications" ]; then
-            echo "✅ final_applications目錄存在"
+            echo "[SUCCESS] final_applications目錄存在"
             find final_applications -name "*.md" | head -5
           else
-            echo "⚠️ final_applications目錄不存在，需要先生成申請文件"
+            echo "[WARNING] final_applications目錄不存在，需要先生成申請文件"
           fi
           
           if [ -d "supporting_documents" ]; then
-            echo "✅ supporting_documents目錄存在"
+            echo "[SUCCESS] supporting_documents目錄存在"
             ls -la supporting_documents/
           else
-            echo "⚠️ supporting_documents目錄不存在"
+            echo "[WARNING] supporting_documents目錄不存在"
           fi
       
-      - name: 📄 Generate Application Documents (if needed)
+      - name: Generate Application Documents (if needed)
         if: ${{ !cancelled() }}
         run: |
           if [ ! -d "final_applications" ] || [ -z "$(ls -A final_applications 2>/dev/null)" ]; then
-            echo "📝 final_applications目錄為空，先生成申請文件..."
+            echo "[GENERATE] final_applications目錄為空，先生成申請文件..."
             
             if [ -f "build_scripts/generate_docs.py" ]; then
               python build_scripts/generate_docs.py
-              echo "✅ 申請文件生成完成"
+              echo "[SUCCESS] 申請文件生成完成"
             else
-              echo "⚠️ 找不到generate_docs.py，跳過申請文件生成"
+              echo "[WARNING] 找不到generate_docs.py，跳過申請文件生成"
             fi
           else
-            echo "✅ 申請文件已存在，跳過生成步驟"
+            echo "[SUCCESS] 申請文件已存在，跳過生成步驟"
           fi
       
-      - name: 🎯 Generate PDFs
+      - name: Generate PDFs
         id: generate_pdfs
+        if: ${{ !cancelled() }}
+        env:
+          PDF_TYPE: ${{ github.event.inputs.pdf_type || 'all' }}
         run: |
-          echo "🚀 開始生成PDF文件..."
+          echo "[START] 開始生成PDF文件..."
           
           # 設定PDF類型
-          PDF_TYPE="${{ github.event.inputs.pdf_type || 'all' }}"
-          echo "📋 PDF類型: $PDF_TYPE"
+          echo "[TYPE] PDF類型: $PDF_TYPE"
           
           # 建立輸出目錄
           mkdir -p application_pdfs
@@ -144,8 +155,8 @@ jobs:
           
           # 檢查生成結果
           if [ -d "application_pdfs" ] && [ "$(ls -A application_pdfs 2>/dev/null)" ]; then
-            echo "✅ PDF生成成功！"
-            echo "📁 生成的PDF文件:"
+            echo "[SUCCESS] PDF生成成功！"
+            echo "[FILES] 生成的PDF文件:"
             ls -lh application_pdfs/
             
             # 設定輸出變數
@@ -155,34 +166,34 @@ jobs:
             # 計算總檔案大小
             total_size=$(du -sh application_pdfs/ | cut -f1)
             echo "total_size=$total_size" >> $GITHUB_OUTPUT
-            echo "📏 總檔案大小: $total_size"
+            echo "[SIZE] 總檔案大小: $total_size"
             
           else
-            echo "❌ PDF生成失敗或沒有生成任何檔案"
+            echo "[ERROR] PDF生成失敗或沒有生成任何檔案"
             echo "pdf_generated=false" >> $GITHUB_OUTPUT
             exit 1
           fi
       
-      - name: 📊 PDF Quality Check
-        if: steps.generate_pdfs.outputs.pdf_generated == 'true'
+      - name: PDF Quality Check
+        if: ${{ !cancelled() && steps.generate_pdfs.outputs.pdf_generated == 'true' }}
         run: |
-          echo "🔍 執行PDF品質檢查..."
+          echo "[CHECK] 執行PDF品質檢查..."
           
           for pdf in application_pdfs/*.pdf; do
             if [ -f "$pdf" ]; then
               size=$(stat --format="%s" "$pdf")
               size_mb=$(echo "scale=2; $size / 1024 / 1024" | bc -l)
               
-              echo "📄 檔案: $(basename "$pdf")"
+              echo "[FILE] 檔案: $(basename "$pdf")"
               echo "   大小: ${size_mb}MB"
               
               # 檢查檔案大小限制
               if [[ "$pdf" == *"CV"* ]] && (( $(echo "$size_mb > 4" | bc -l) )); then
-                echo "⚠️ 警告: CV檔案超過4MB限制"
+                echo "[WARNING] 警告: CV檔案超過4MB限制"
               elif [[ "$pdf" != *"CV"* ]] && (( $(echo "$size_mb > 10" | bc -l) )); then
-                echo "⚠️ 警告: 檔案超過10MB限制"
+                echo "[WARNING] 警告: 檔案超過10MB限制"
               else
-                echo "✅ 檔案大小符合要求"
+                echo "[SUCCESS] 檔案大小符合要求"
               fi
               
               # 檢查PDF完整性
@@ -195,8 +206,8 @@ jobs:
             fi
           done
       
-      - name: 📤 Upload PDF Artifacts
-        if: steps.generate_pdfs.outputs.pdf_generated == 'true'
+      - name: Upload PDF Artifacts
+        if: ${{ !cancelled() && steps.generate_pdfs.outputs.pdf_generated == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: application-pdfs-${{ github.run_number }}
@@ -204,10 +215,10 @@ jobs:
           retention-days: 30
           compression-level: 6
       
-      - name: 💾 Commit Generated PDFs
+      - name: Commit Generated PDFs
         if: steps.generate_pdfs.outputs.pdf_generated == 'true' && github.event_name != 'pull_request'
         run: |
-          echo "💾 提交生成的PDF文件到Repository..."
+          echo "[COMMIT] 提交生成的PDF文件到Repository..."
           
           # 設定Git配置
           git config user.name "GitHub Actions Bot"
@@ -217,20 +228,20 @@ jobs:
           git add application_pdfs/
           
           if git diff --staged --quiet; then
-            echo "ℹ️ 沒有新的PDF檔案需要提交"
+            echo "[INFO] 沒有新的PDF檔案需要提交"
           else
             # 建立提交
             TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S UTC')
             
             # 建立提交訊息
             cat > commit_message.txt << EOF
-          🤖 Auto-generate: Application PDFs
+          [AUTO] Auto-generate: Application PDFs
           
-          📅 Generated: $TIMESTAMP
-          🔧 Workflow: ${{ github.workflow }}
-          📋 Run ID: ${{ github.run_id }}
-          📊 Files: ${{ steps.generate_pdfs.outputs.pdf_count }} PDFs
-          📏 Total Size: ${{ steps.generate_pdfs.outputs.total_size }}
+          [DATE] Generated: $TIMESTAMP
+          [WORKFLOW] Workflow: ${{ github.workflow }}
+          [RUN] Run ID: ${{ github.run_id }}
+          [COUNT] Files: ${{ steps.generate_pdfs.outputs.pdf_count }} PDFs
+          [SIZE] Total Size: ${{ steps.generate_pdfs.outputs.total_size }}
           
           Generated PDFs:
           $(ls application_pdfs/ | sed 's/^/- /' 2>/dev/null || echo '- No PDFs found')
@@ -242,24 +253,24 @@ jobs:
             # 推送到repository
             git push origin ${{ github.ref_name }}
             
-            echo "✅ PDF文件已提交並推送到GitHub"
+            echo "[SUCCESS] PDF文件已提交並推送到GitHub"
           fi
       
-      - name: 📋 Create Summary
+      - name: Create Summary
         if: always()
         run: |
-          echo "## 📄 PDF Generation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## PDF Generation Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           if [ "${{ steps.generate_pdfs.outputs.pdf_generated }}" == "true" ]; then
-            echo "### ✅ Generation Successful" >> $GITHUB_STEP_SUMMARY
+            echo "### [SUCCESS] Generation Successful" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "- **Files Generated:** ${{ steps.generate_pdfs.outputs.pdf_count }} PDFs" >> $GITHUB_STEP_SUMMARY
             echo "- **Total Size:** ${{ steps.generate_pdfs.outputs.total_size }}" >> $GITHUB_STEP_SUMMARY
             echo "- **Output Directory:** \`application_pdfs/\`" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             
-            echo "### 📁 Generated Files:" >> $GITHUB_STEP_SUMMARY
+            echo "### Generated Files:" >> $GITHUB_STEP_SUMMARY
             for pdf in application_pdfs/*.pdf; do
               if [ -f "$pdf" ]; then
                 size=$(stat --format="%s" "$pdf")
@@ -269,13 +280,13 @@ jobs:
             done
             
           else
-            echo "### ❌ Generation Failed" >> $GITHUB_STEP_SUMMARY
+            echo "### [ERROR] Generation Failed" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "請檢查workflow日誌以了解失敗原因。" >> $GITHUB_STEP_SUMMARY
           fi
           
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📋 Application Requirements" >> $GITHUB_STEP_SUMMARY
+          echo "### Application Requirements" >> $GITHUB_STEP_SUMMARY
           echo "- **CV:** Maximum 4MB PDF" >> $GITHUB_STEP_SUMMARY
           echo "- **Transcript:** Maximum 10MB PDF" >> $GITHUB_STEP_SUMMARY  
           echo "- **Supporting Docs:** Maximum 10MB PDF" >> $GITHUB_STEP_SUMMARY
@@ -284,18 +295,18 @@ jobs:
           echo "*Generated by GitHub Actions • $(date)*" >> $GITHUB_STEP_SUMMARY
 
   notify-completion:
-    name: 📢 Notify Completion
+    name: Notify Completion
     needs: generate-pdfs
     runs-on: ubuntu-latest
     if: always() && github.event_name != 'pull_request'
     
     steps:
-      - name: 📧 Send Notification
+      - name: Send Notification
         if: needs.generate-pdfs.result == 'success'
         run: |
-          echo "🎉 PDF generation completed successfully!"
-          echo "📁 Check the application_pdfs/ directory for generated files"
-          echo "💾 Files have been committed to the repository"
+          echo "[COMPLETE] PDF generation completed successfully!"
+          echo "[FILES] Check the application_pdfs/ directory for generated files"
+          echo "[COMMIT] Files have been committed to the repository"
           
           # 這裡可以加入發送Email或Slack通知的邏輯
           # 例如使用 GitHub Actions 的通知功能
