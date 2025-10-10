@@ -1,0 +1,582 @@
+pipeline:
+  name: "PDF Generation Pipeline"
+  identifier: "pdf_generation_pipeline"
+  projectIdentifier: "exchange_plan"
+  orgIdentifier: "default"
+  tags:
+    system: "exchange-application" 
+    type: "pdf-generation"
+    version: "1.0.0"
+
+  properties:
+    ci:
+      codebase:
+        connectorRef: "gitconnector"
+        repoName: "Exchange-Plan"
+        build: <+input>
+
+  variables:
+    - name: pdf_type
+      type: String
+      description: "PDF類型 (cv, transcript, supporting, all)"
+      value: "all"
+    - name: output_directory
+      type: String
+      description: "PDF輸出目錄"
+      value: "application_pdfs"
+
+  stages:
+    - stage:
+        name: "Environment Setup"
+        identifier: "setup"
+        description: "設置PDF生成環境和依賴"
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: "System Information"
+                  identifier: "system_info"
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🔧 PDF Generation Pipeline"
+                      echo "========================================"
+                      echo "Date: $(date)"
+                      echo "Python: $(python3 --version)"
+                      echo "Platform: $(uname -a)"
+                      echo "Working Directory: $(pwd)"
+                      echo "========================================"
+              
+              - step:
+                  type: Run
+                  name: "Install System Dependencies"
+                  identifier: "install_system_deps"
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "📦 安裝系統依賴套件..."
+                      
+                      # 更新套件管理器
+                      apt-get update -qq
+                      
+                      # 安裝WeasyPrint所需的系統套件
+                      apt-get install -y \
+                        libpango-1.0-0 \
+                        libharfbuzz0b \
+                        libpangoft2-1.0-0 \
+                        libfontconfig1 \
+                        libcairo2 \
+                        libgdk-pixbuf2.0-0 \
+                        shared-mime-info \
+                        fonts-dejavu-core \
+                        fonts-liberation \
+                        fonts-noto-cjk \
+                        bc
+                      
+                      echo "✅ 系統依賴安裝完成"
+              
+              - step:
+                  type: Run
+                  name: "Install Python Dependencies"
+                  identifier: "install_python_deps"
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🐍 安裝Python依賴套件..."
+                      
+                      # 升級pip
+                      python3 -m pip install --upgrade pip
+                      
+                      # 安裝PDF生成相關套件
+                      pip3 install \
+                        PyYAML>=6.0 \
+                        markdown>=3.4 \
+                        Pillow>=9.0.0 \
+                        weasyprint>=59.0 \
+                        reportlab>=4.0.0 \
+                        img2pdf>=0.4.4 \
+                        cssselect2>=0.7.0 \
+                        html5lib>=1.1 \
+                        tinycss2>=1.2.0 \
+                        python-dateutil>=2.8.0 \
+                        fonttools>=4.38.0
+                      
+                      echo "✅ Python套件安裝完成"
+              
+              - step:
+                  type: Run
+                  name: "Validate Environment"
+                  identifier: "validate_env"
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🔍 驗證PDF生成環境..."
+                      
+                      # 測試關鍵套件
+                      python3 -c "import weasyprint; print('✅ WeasyPrint OK')"
+                      python3 -c "import reportlab; print('✅ ReportLab OK')"
+                      python3 -c "import PIL; print('✅ Pillow OK')"
+                      python3 -c "import yaml; print('✅ PyYAML OK')"
+                      python3 -c "import markdown; print('✅ Markdown OK')"
+                      
+                      # 檢查必要檔案
+                      echo ""
+                      echo "📂 檢查必要檔案..."
+                      
+                      if [ -f "my_profile.yml" ]; then
+                        echo "✅ my_profile.yml 存在"
+                      else
+                        echo "❌ 找不到 my_profile.yml"
+                        exit 1
+                      fi
+                      
+                      if [ -f "build_scripts/generate_pdfs.py" ]; then
+                        echo "✅ PDF生成腳本存在"
+                      else
+                        echo "❌ 找不到 PDF生成腳本"
+                        exit 1
+                      fi
+                      
+                      echo "✅ 環境驗證完成"
+
+    - stage:
+        name: "Generate Application Documents"
+        identifier: "generate_docs"
+        description: "生成申請文件（如果需要）"
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: "Check Application Documents"
+                  identifier: "check_docs"
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "📋 檢查申請文件狀態..."
+                      
+                      if [ -d "final_applications" ] && [ "$(ls -A final_applications 2>/dev/null)" ]; then
+                        echo "✅ final_applications目錄存在且有內容"
+                        doc_count=$(find final_applications -name "*.md" | wc -l)
+                        echo "📄 找到 $doc_count 個Markdown文件"
+                        
+                        # 列出一些文件
+                        echo "文件範例:"
+                        find final_applications -name "*cv*.md" | head -3
+                      else
+                        echo "⚠️ final_applications目錄不存在或為空"
+                        echo "需要先生成申請文件..."
+                        echo "generate_docs_needed=true" >> $GITHUB_ENV
+                      fi
+              
+              - step:
+                  type: Run
+                  name: "Generate Documents (if needed)"
+                  identifier: "generate_if_needed"
+                  spec:
+                    shell: Bash
+                    command: |
+                      if [ "${generate_docs_needed:-false}" == "true" ]; then
+                        echo "📝 生成申請文件..."
+                        
+                        if [ -f "build_scripts/generate_docs.py" ]; then
+                          python3 build_scripts/generate_docs.py
+                          
+                          if [ -d "final_applications" ] && [ "$(ls -A final_applications 2>/dev/null)" ]; then
+                            echo "✅ 申請文件生成成功"
+                          else
+                            echo "❌ 申請文件生成失敗"
+                            exit 1
+                          fi
+                        else
+                          echo "❌ 找不到文件生成腳本"
+                          exit 1
+                        fi
+                      else
+                        echo "✅ 申請文件已存在，跳過生成步驟"
+                      fi
+
+    - stage:
+        name: "PDF Generation"
+        identifier: "pdf_generation"
+        description: "生成申請所需的PDF文件"
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: "Generate PDFs"
+                  identifier: "generate_pdfs"
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🎯 開始生成PDF文件..."
+                      echo "PDF類型: <+pipeline.variables.pdf_type>"
+                      echo "輸出目錄: <+pipeline.variables.output_directory>"
+                      
+                      # 設定環境變數
+                      export PDF_TYPE="<+pipeline.variables.pdf_type>"
+                      export OUTPUT_DIR="<+pipeline.variables.output_directory>"
+                      
+                      # 建立輸出目錄
+                      mkdir -p "$OUTPUT_DIR"
+                      
+                      # 執行PDF生成
+                      python3 build_scripts/generate_pdfs.py \
+                        --type "$PDF_TYPE" \
+                        --profile my_profile.yml \
+                        --output "$OUTPUT_DIR"
+                      
+                      # 檢查生成結果
+                      if [ -d "$OUTPUT_DIR" ] && [ "$(ls -A $OUTPUT_DIR 2>/dev/null)" ]; then
+                        echo "✅ PDF生成成功！"
+                        echo ""
+                        echo "📁 生成的PDF文件:"
+                        ls -lh "$OUTPUT_DIR"/
+                        
+                        # 統計資訊
+                        pdf_count=$(ls "$OUTPUT_DIR"/*.pdf 2>/dev/null | wc -l)
+                        total_size=$(du -sh "$OUTPUT_DIR"/ | cut -f1)
+                        
+                        echo ""
+                        echo "📊 生成統計:"
+                        echo "  • PDF文件數量: $pdf_count"
+                        echo "  • 總檔案大小: $total_size"
+                        
+                        # 輸出變數供後續步驟使用
+                        echo "PDF_GENERATED=true" >> $HARNESS_ENV
+                        echo "PDF_COUNT=$pdf_count" >> $HARNESS_ENV
+                        echo "TOTAL_SIZE=$total_size" >> $HARNESS_ENV
+                        
+                      else
+                        echo "❌ PDF生成失敗或沒有生成任何檔案"
+                        echo "PDF_GENERATED=false" >> $HARNESS_ENV
+                        exit 1
+                      fi
+              
+              - step:
+                  type: Run
+                  name: "PDF Quality Check"
+                  identifier: "quality_check"
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🔍 執行PDF品質檢查..."
+                      
+                      OUTPUT_DIR="<+pipeline.variables.output_directory>"
+                      
+                      if [ ! -d "$OUTPUT_DIR" ]; then
+                        echo "❌ 輸出目錄不存在"
+                        exit 1
+                      fi
+                      
+                      quality_passed=true
+                      
+                      for pdf in "$OUTPUT_DIR"/*.pdf; do
+                        if [ -f "$pdf" ]; then
+                          filename=$(basename "$pdf")
+                          size=$(stat --format="%s" "$pdf")
+                          size_mb=$(echo "scale=2; $size / 1024 / 1024" | bc -l)
+                          
+                          echo "📄 檔案: $filename"
+                          echo "   大小: ${size_mb}MB"
+                          
+                          # 檢查檔案大小限制
+                          if [[ "$pdf" == *"CV"* ]] && (( $(echo "$size_mb > 4" | bc -l) )); then
+                            echo "   ❌ 超過CV檔案4MB限制"
+                            quality_passed=false
+                          elif [[ "$pdf" != *"CV"* ]] && (( $(echo "$size_mb > 10" | bc -l) )); then
+                            echo "   ❌ 超過10MB檔案限制"
+                            quality_passed=false
+                          else
+                            echo "   ✅ 檔案大小符合要求"
+                          fi
+                          
+                          # 檢查PDF完整性（如果有pdfinfo工具）
+                          if command -v pdfinfo >/dev/null 2>&1; then
+                            if pdfinfo "$pdf" >/dev/null 2>&1; then
+                              pages=$(pdfinfo "$pdf" 2>/dev/null | grep "Pages:" | awk '{print $2}')
+                              echo "   📃 頁數: ${pages:-Unknown}"
+                              echo "   ✅ PDF格式有效"
+                            else
+                              echo "   ❌ PDF格式可能有問題"
+                              quality_passed=false
+                            fi
+                          fi
+                          
+                          echo ""
+                        fi
+                      done
+                      
+                      if [ "$quality_passed" == "true" ]; then
+                        echo "✅ 所有PDF文件品質檢查通過"
+                      else
+                        echo "❌ 部分PDF文件未通過品質檢查"
+                        exit 1
+                      fi
+
+    - stage:
+        name: "Save and Notify"
+        identifier: "save_notify"
+        description: "保存PDF文件並發送通知"
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: "Commit PDFs to Repository"
+                  identifier: "commit_pdfs"
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "💾 提交PDF文件到Repository..."
+                      
+                      OUTPUT_DIR="<+pipeline.variables.output_directory>"
+                      
+                      if [ ! -d "$OUTPUT_DIR" ] || [ -z "$(ls -A $OUTPUT_DIR 2>/dev/null)" ]; then
+                        echo "❌ 沒有PDF文件需要提交"
+                        exit 1
+                      fi
+                      
+                      # 設定Git配置
+                      git config user.email "harness-pipeline@dennisleehappy.org"
+                      git config user.name "Harness PDF Pipeline Bot"
+                      
+                      # 檢查Git狀態
+                      echo "📋 Git status:"
+                      git status
+                      
+                      # 加入PDF文件
+                      git add "$OUTPUT_DIR"/
+                      
+                      # 檢查是否有變更
+                      if git diff --staged --quiet; then
+                        echo "ℹ️ 沒有新的PDF檔案需要提交"
+                      else
+                        # 建立提交訊息
+                        TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S UTC')
+                        PDF_COUNT="${PDF_COUNT:-unknown}"
+                        TOTAL_SIZE="${TOTAL_SIZE:-unknown}"
+                        
+                        COMMIT_MSG="🤖 Auto-generate: Application PDFs
+
+📅 Generated: $TIMESTAMP
+🔧 Pipeline: <+pipeline.name>
+📋 Execution: <+pipeline.sequenceId>
+🎯 PDF Type: <+pipeline.variables.pdf_type>
+📊 Files: $PDF_COUNT PDFs
+📏 Total Size: $TOTAL_SIZE
+
+Generated PDFs:
+$(cd "$OUTPUT_DIR" && ls -1 *.pdf 2>/dev/null | sed 's/^/- /' || echo '- No PDFs found')"
+
+                        git commit -m "$COMMIT_MSG"
+                        
+                        # 推送到Repository
+                        git push origin HEAD:<+codebase.branch>
+                        
+                        echo "✅ PDF文件已提交並推送到GitHub"
+                        echo "📝 Commit Hash: $(git rev-parse --short HEAD)"
+                      fi
+              
+              - step:
+                  type: Run
+                  name: "Generate Summary Report"
+                  identifier: "summary_report"
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "📊 生成執行總結報告..."
+                      
+                      OUTPUT_DIR="<+pipeline.variables.output_directory>"
+                      TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S UTC')
+                      
+                      # 建立報告檔案
+                      REPORT_FILE="pdf_generation_report_$(date +%Y%m%d_%H%M%S).md"
+                      
+                      cat > "$REPORT_FILE" << EOF
+                      # PDF Generation Report
+                      
+                      **Generated:** $TIMESTAMP  
+                      **Pipeline:** <+pipeline.name>  
+                      **Execution ID:** <+pipeline.sequenceId>  
+                      **Branch:** <+codebase.branch>  
+                      **PDF Type:** <+pipeline.variables.pdf_type>
+                      
+                      ## Results
+                      
+                      EOF
+                      
+                      if [ -d "$OUTPUT_DIR" ] && [ "$(ls -A $OUTPUT_DIR 2>/dev/null)" ]; then
+                        echo "**Status:** ✅ Success" >> "$REPORT_FILE"
+                        echo "" >> "$REPORT_FILE"
+                        echo "### Generated Files" >> "$REPORT_FILE"
+                        echo "" >> "$REPORT_FILE"
+                        
+                        for pdf in "$OUTPUT_DIR"/*.pdf; do
+                          if [ -f "$pdf" ]; then
+                            filename=$(basename "$pdf")
+                            size=$(stat --format="%s" "$pdf")
+                            size_mb=$(echo "scale=2; $size / 1024 / 1024" | bc -l)
+                            echo "- **$filename** (${size_mb}MB)" >> "$REPORT_FILE"
+                          fi
+                        done
+                        
+                        total_files=$(ls "$OUTPUT_DIR"/*.pdf 2>/dev/null | wc -l)
+                        total_size=$(du -sh "$OUTPUT_DIR"/ | cut -f1)
+                        
+                        echo "" >> "$REPORT_FILE"
+                        echo "### Statistics" >> "$REPORT_FILE"
+                        echo "" >> "$REPORT_FILE"
+                        echo "- **Total Files:** $total_files PDFs" >> "$REPORT_FILE"
+                        echo "- **Total Size:** $total_size" >> "$REPORT_FILE"
+                        echo "- **Output Directory:** \`$OUTPUT_DIR/\`" >> "$REPORT_FILE"
+                        
+                      else
+                        echo "**Status:** ❌ Failed" >> "$REPORT_FILE"
+                        echo "" >> "$REPORT_FILE"
+                        echo "No PDF files were generated." >> "$REPORT_FILE"
+                      fi
+                      
+                      echo "" >> "$REPORT_FILE"
+                      echo "## Next Steps" >> "$REPORT_FILE"
+                      echo "" >> "$REPORT_FILE"
+                      echo "1. Review generated PDF files in \`$OUTPUT_DIR/\` directory" >> "$REPORT_FILE"
+                      echo "2. Check file sizes comply with application requirements:" >> "$REPORT_FILE"
+                      echo "   - CV: Maximum 4MB" >> "$REPORT_FILE"
+                      echo "   - Transcript: Maximum 10MB" >> "$REPORT_FILE"
+                      echo "   - Supporting Documents: Maximum 10MB" >> "$REPORT_FILE"
+                      echo "3. Download and review PDF content before submission" >> "$REPORT_FILE"
+                      echo "" >> "$REPORT_FILE"
+                      echo "---" >> "$REPORT_FILE"
+                      echo "*Report generated by Harness PDF Pipeline*" >> "$REPORT_FILE"
+                      
+                      echo "✅ 報告已生成: $REPORT_FILE"
+                      echo "📄 報告內容:"
+                      cat "$REPORT_FILE"
+              
+              - step:
+                  type: Run
+                  name: "Success Notification"
+                  identifier: "success_notification"
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "=============================================="
+                      echo "🎉 PDF Generation Pipeline Completed!"
+                      echo "=============================================="
+                      echo "Generated: $(date)"
+                      echo "Pipeline: <+pipeline.name>"
+                      echo "Execution: <+pipeline.sequenceId>"
+                      echo "PDF Type: <+pipeline.variables.pdf_type>"
+                      echo "Output: <+pipeline.variables.output_directory>/"
+                      echo ""
+                      echo "📋 Application Requirements Met:"
+                      echo "✅ Curriculum Vitae (max 4MB PDF)"
+                      echo "✅ Transcript of Records (max 10MB PDF)"  
+                      echo "✅ Other Documents (max 10MB PDF)"
+                      echo ""
+                      echo "📁 Generated files have been committed to GitHub"
+                      echo "🔗 Branch: <+codebase.branch>"
+                      echo ""
+                      echo "Next Steps:"
+                      echo "1. Pull latest changes from GitHub"
+                      echo "2. Review PDF files in application_pdfs/ directory"
+                      echo "3. Verify content accuracy before submission"
+                      echo "4. Prepare for ISCTE application submission"
+                      echo ""
+                      echo "=============================================="
+
+  notificationRules:
+    - name: "PDF Pipeline Success"
+      identifier: "pdf_success_notification"
+      pipelineEvents:
+        - type: PipelineSuccess
+      notificationMethod:
+        type: Email
+        spec:
+          userGroups: []
+          recipients:
+            - admin@dennisleehappy.org
+          subject: "✅ PDF Generation Pipeline Completed - Exchange Application"
+          body: |
+            The PDF Generation Pipeline has completed successfully!
+            
+            Pipeline: <+pipeline.name>
+            Execution ID: <+pipeline.sequenceId>
+            Branch: <+codebase.branch>
+            PDF Type: <+pipeline.variables.pdf_type>
+            
+            ✅ Generated PDFs are ready for ISCTE application:
+            • Curriculum Vitae (max 4MB PDF)
+            • Transcript of Records (max 10MB PDF)
+            • Other Supporting Documents (max 10MB PDF)
+            
+            📁 Files have been committed to GitHub repository
+            🔗 Check application_pdfs/ directory for generated files
+            
+            Next: Review PDF content and prepare for submission.
+            
+            Best regards,
+            Harness PDF Pipeline Bot
+      enabled: true
+    
+    - name: "PDF Pipeline Failure"
+      identifier: "pdf_failure_notification"
+      pipelineEvents:
+        - type: PipelineFailed
+      notificationMethod:
+        type: Email
+        spec:
+          userGroups: []
+          recipients:
+            - admin@dennisleehappy.org
+          subject: "❌ PDF Generation Pipeline Failed - Exchange Application"
+          body: |
+            The PDF Generation Pipeline has failed!
+            
+            Pipeline: <+pipeline.name>
+            Execution ID: <+pipeline.sequenceId>
+            Failed Stage: <+pipeline.stage.name>
+            
+            Please check the pipeline logs for detailed error information.
+            
+            The PDF files required for ISCTE application may not be available.
+            Manual intervention may be required.
+            
+            Best regards,
+            Harness PDF Pipeline Bot
+      enabled: true
