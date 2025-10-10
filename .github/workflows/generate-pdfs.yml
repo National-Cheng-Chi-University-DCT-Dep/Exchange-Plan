@@ -224,6 +224,10 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           
+          # 同步遠程變更
+          echo "[SYNC] 同步遠程repository變更..."
+          git fetch origin ${{ github.ref_name }}
+          
           # 檢查是否有變更
           git add application_pdfs/
           
@@ -250,10 +254,24 @@ jobs:
             git commit -F commit_message.txt
             rm commit_message.txt
             
-            # 推送到repository
-            git push origin ${{ github.ref_name }}
-            
-            echo "[SUCCESS] PDF文件已提交並推送到GitHub"
+            # 嘗試推送，如果失敗則同步後重試
+            echo "[PUSH] 推送PDF文件到repository..."
+            if ! git push origin ${{ github.ref_name }}; then
+              echo "[RETRY] 推送失敗，同步遠程變更後重試..."
+              
+              # 拉取遠程變更並自動合併
+              git pull --rebase origin ${{ github.ref_name }} || {
+                echo "[ERROR] 自動合併失敗，需要手動解決衝突"
+                git status
+                exit 1
+              }
+              
+              # 重新推送
+              git push origin ${{ github.ref_name }}
+              echo "[SUCCESS] PDF文件已成功推送到GitHub (經過同步)"
+            else
+              echo "[SUCCESS] PDF文件已直接推送到GitHub"
+            fi
           fi
       
       - name: Create Summary
