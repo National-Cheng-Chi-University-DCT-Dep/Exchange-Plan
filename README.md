@@ -87,7 +87,16 @@ Exchange-Plan/
 │
 ├── 📂 supporting_documents/         # 支持文件
 │   ├── SUPPORTING_DOCUMENTS_INDEX.md
+│   ├── CERTIFICATIONS_GUIDE.md     # 證照使用指南
 │   ├── PORTFOLIO_HIGHLIGHTS.md
+│   ├── certifications/              # 🆕 45+證照文件
+│   │   ├── CERTIFICATIONS_INDEX.md
+│   │   ├── CC.pdf                   # ISC² CC
+│   │   ├── AI-SECURITY.pdf          # AI安全
+│   │   ├── CF-1.pdf, CF-2.pdf, CF-3.pdf  # Cloudflare
+│   │   ├── AWS1.pdf, AWS2.pdf, AWS3.pdf   # AWS
+│   │   ├── QUANTUM-*.pdf            # 量子計算系列
+│   │   └── ... (28+ certificates)
 │   ├── 獎學金.png
 │   ├── 校園事務參與.png
 │   ├── Github-*.png
@@ -341,11 +350,15 @@ Trigger → Setup → Generate → Build → Push to GitHub → ✅
 - EF SET: **76/100 (C2)**
 
 ### 專業證照
-- **45+** 國際認證
-- ISC² Certified in Cybersecurity
-- Cloudflare ACE/ASE/MSP
-- AWS, GCP, Oracle Cloud
-- Quantum Computing (IBM, Linux Foundation)
+- **45+** 國際認證證照
+- **網路安全**: ISC² CC, AI Security, DSPM Fundamentals
+- **雲端運算**: Cloudflare ACE/ASE/MSP, AWS (3張), Prisma Cloud (5張)
+- **量子計算**: 4張量子計算專業證照 (IBM Qiskit, Quantum Algorithms, Cryptography)
+- **軟體開發**: React (Meta), SQL, Network Automation
+- **醫療IT**: Healthcare IT Professional, ICD-10
+- **語言能力**: EF SET C2 (76/100), IELTS 7.0
+- **開源貢獻**: GitHub Arctic Code Vault, Pull Shark, YOLO
+- 📁 證照文件: `supporting_documents/certifications/`
 
 ### 工作經驗
 - **5年** 網路安全與雲端基礎設施

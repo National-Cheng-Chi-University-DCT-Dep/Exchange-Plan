@@ -1,0 +1,14 @@
+inputSet:
+  pipeline:
+    identifier: exchange_application_pipeline
+    properties:
+      ci:
+        codebase:
+          build:
+            spec:
+              branch: main
+            type: branch
+  name: exchange
+  identifier: exchange
+  orgIdentifier: default
+  projectIdentifier: default_project

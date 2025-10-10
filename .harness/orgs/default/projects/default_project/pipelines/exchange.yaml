@@ -299,6 +299,8 @@ pipeline:
                   identifier: commit_push
                   spec:
                     shell: Bash
+                    envVariables:
+                      GITHUB_TOKEN: <+secrets.getValue("github_pat")>
                     command: |
                       echo "Preparing to commit generated files to GitHub..."
 
@@ -306,6 +308,29 @@ pipeline:
                       echo "Current directory: $(pwd)"
                       echo "Directory contents:"
                       ls -la
+
+                      # Configure git
+                      git config user.email "harness-pipeline@dennisleehappy.org"
+                      git config user.name "Harness Pipeline Bot"
+
+                      # Setup authentication using Personal Access Token
+                      if [ -n "$GITHUB_TOKEN" ]; then
+                        echo "✅ GitHub token configured"
+                        git remote set-url origin https://${GITHUB_TOKEN}@github.com/National-Cheng-Chi-University-DCT-Dep/Exchange-Plan.git
+                        
+                        # Test authentication
+                        if git ls-remote origin &> /dev/null; then
+                          echo "✅ Git authentication successful"
+                        else
+                          echo "❌ Git authentication failed"
+                          echo "⚠️ Skipping push, but files are committed locally"
+                          exit 0
+                        fi
+                      else
+                        echo "⚠️ GitHub token not configured"
+                        echo "⚠️ Files will be committed locally but not pushed"
+                        echo "📖 See .harness/GIT_PUSH_FIX.md for setup instructions"
+                      fi
 
                       # Search for final_applications directory
                       echo ""
@@ -353,7 +378,7 @@ pipeline:
                         # Check if there are changes
                         if git diff --staged --quiet; then
                           echo ""
-                          echo "No changes to commit (files already exist in repository)"
+                          echo "ℹ️ No changes to commit (files already exist in repository)"
                         else
                           # Commit with timestamp
                           TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
@@ -391,23 +416,19 @@ pipeline:
                         echo "This means the document and PDF generation steps may have failed"
                         echo "Please check the previous pipeline steps for errors"
                         
-                        # Still try to create a summary of what we have
-                        echo ""
-                        echo "Creating execution summary..."
                         mkdir -p pipeline_logs
                         echo "Pipeline Execution Summary" > pipeline_logs/execution_summary.txt
                         echo "==========================" >> pipeline_logs/execution_summary.txt
                         echo "Pipeline ID: <+pipeline.sequenceId>" >> pipeline_logs/execution_summary.txt
-                        echo "Execution Time: <+pipeline.startTs>" >> pipeline_logs/execution_summary.txt
                         echo "Status: Completed but no documents generated" >> pipeline_logs/execution_summary.txt
-                        echo "" >> pipeline_logs/execution_summary.txt
                         echo "Current Directory: $(pwd)" >> pipeline_logs/execution_summary.txt
-                        echo "Issue: final_applications directory not found or empty" >> pipeline_logs/execution_summary.txt
-                        echo "Recommendation: Check validator.py and generate_docs.py execution logs" >> pipeline_logs/execution_summary.txt
                         
-                        git add pipeline_logs/
-                        git commit -m "docs: Pipeline execution log - no documents generated" || echo "Nothing to commit"
-                        git push origin HEAD:<+codebase.branch> || echo "Push failed or nothing to push"
+                        git add pipeline_logs/ 2>/dev/null || true
+                        git commit -m "docs: Pipeline execution log - no documents generated" 2>/dev/null || echo "Nothing new to commit"
+                        
+                        if [ -n "$GITHUB_TOKEN" ]; then
+                          git push origin HEAD:<+codebase.branch> 2>/dev/null || echo "Push skipped"
+                        fi
                       fi
               - step:
                   type: Run
