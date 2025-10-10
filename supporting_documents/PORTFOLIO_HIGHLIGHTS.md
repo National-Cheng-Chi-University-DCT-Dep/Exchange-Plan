@@ -215,17 +215,52 @@ Combination of technical depth (45+ certifications) and creative breadth (NFT ar
 
 ---
 
+## Live Portfolio Demonstrations
+
+除了 GitHub repositories，申請人另有 **17+ 線上運行的專案展示**，涵蓋資訊安全、區塊鏈、AI/ML、量子運算、醫療資訊等領域。
+
+### 精選線上專案
+
+| 專案名稱 | 技術領域 | 線上展示 |
+|---------|---------|---------|
+| **Zero Trust 架構實作** | 資訊安全 | [admin-dev.dennisleehappy.org](https://admin-dev.dennisleehappy.org/) |
+| **AI 動態入侵防禦系統** | AI + Security | [ai-security-online-demo.dennisleehappy.org](https://ai-security-online-demo.dennisleehappy.org/) |
+| **Solana 碳交易平台** | Blockchain + ESG | [carbontrading.dennisleehappy.org](https://carbontrading.dennisleehappy.org/) |
+| **量子傅立葉轉換視覺化** | Quantum Computing | [essentia.dennisleehappy.org](https://essentia.dennisleehappy.org/) |
+| **Web3 智能合約平台** | Blockchain | [web3.dennisleehappy.org](https://web3.dennisleehappy.org/) |
+| **醫療資訊系統實驗室** | Healthcare IT | [siep-lab.dennisleehappy.org](https://siep-lab.dennisleehappy.org/) |
+| **RAG 檢索增強生成系統** | AI/ML | [rag.dennisleehappy.org](https://rag.dennisleehappy.org/) |
+
+**完整專案列表**: 請參閱 `LIVE_PORTFOLIO_DEMOS.md`，包含每個專案的詳細技術說明、架構設計與使用技術棧。
+
+### 技術能力統計
+
+基於 17 個上線專案的技術分析：
+
+| 能力領域 | 專案數量 | 專精程度 |
+|---------|---------|---------|
+| Frontend Development | 17/17 | Expert |
+| Backend Development | 15/17 | Expert |
+| Cloud & DevOps | 17/17 | Advanced |
+| Information Security | 3/17 | Advanced |
+| Blockchain / Web3 | 3/17 | Advanced |
+| AI/ML Integration | 2/17 | Intermediate-Advanced |
+| Healthcare IT | 1/17 | Intermediate |
+
+---
+
 ## Contact & References
 
 **GitHub Profile**: [https://github.com/dennislee928](https://github.com/dennislee928)  
 **Personal Portfolio**: [https://www.dennisleehappy.org/](https://www.dennisleehappy.org/)  
+**2025 Portfolio**: [https://2025-portfolio.dennisleehappy.org/](https://2025-portfolio.dennisleehappy.org/)  
 **LinkedIn**: [https://www.linkedin.com/in/pei-chen-lee-4a3a352a2/](https://www.linkedin.com/in/pei-chen-lee-4a3a352a2/)
 
-*For specific repository access or project demonstrations, please contact at admin@dennisleehappy.org*
+*For specific repository access, project demonstrations, or live demo access, please contact at admin@dennisleehappy.org*
 
 ---
 
-**Last Updated**: October 7, 2025
+**Last Updated**: October 8, 2025
 
 *本文件應與主申請文件一併提交，協助審查委員快速評估技術能力與研究潛力*
 

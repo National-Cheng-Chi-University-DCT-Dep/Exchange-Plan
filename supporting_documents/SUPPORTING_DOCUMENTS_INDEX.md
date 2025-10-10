@@ -201,7 +201,8 @@
 
 ### 5.2 專案作品集
 **GitHub Profile**: [https://github.com/dennislee928](https://github.com/dennislee928)  
-**個人網站**: [https://www.dennisleehappy.org/](https://www.dennisleehappy.org/)
+**個人主網站**: [https://www.dennisleehappy.org/](https://www.dennisleehappy.org/)  
+**2025 作品集**: [https://2025-portfolio.dennisleehappy.org/](https://2025-portfolio.dennisleehappy.org/)
 
 **重點專案**:
 1. **碩士論文**: Quantum Computing & Technological Singularity
@@ -213,9 +214,15 @@
    - Healthcare IT systems (FHIR/HL7)
    - DevSecOps implementation
 
+3. **線上展示專案** (17+ 上線應用):
+   - 完整清單請見 `LIVE_PORTFOLIO_DEMOS.md`
+   - 涵蓋資訊安全、區塊鏈、AI/ML、量子運算等領域
+   - 所有專案皆可實際訪問與測試
+
 **用途**:
-- 提供具體技術實力證明
+- 提供具體技術實力證明（超越 GitHub 原始碼）
 - 展示研究與實務能力
+- 證明部署、維運與產品化能力
 - 支持履歷中的專業經驗欄位
 
 ---
@@ -296,18 +303,22 @@
 ### 補充證明文件包（建議順序）
 1. 📄 **Supporting Documents Index** (本文件)
 2. 💼 **Portfolio Highlights** - GitHub成就與技術摘要
-3. 🎓 **Academic Achievements**:
+3. 🌐 **Live Portfolio Demonstrations** (`LIVE_PORTFOLIO_DEMOS.md`)
+   - 17+ 線上運行專案展示
+   - 涵蓋資訊安全、區塊鏈、AI/ML、量子運算等領域
+   - 每個專案的技術架構與實作細節
+4. 🎓 **Academic Achievements**:
    - 獎學金證明 (`獎學金.png`)
    - 成績單掃描檔 (參考用)
-4. 🔐 **Professional Certifications Summary**:
+5. 🔐 **Professional Certifications Summary**:
    - 重點證照清單（從 my_profile.yml 摘錄前10項）
-5. 🌏 **Cross-Cultural Experience**:
+6. 🌏 **Cross-Cultural Experience**:
    - 校園事務參與證明 (`校園事務參與.png`)
    - 國際項目經驗描述（從履歷摘錄）
-6. 🎨 **Creative & Interdisciplinary Work**:
+7. 🎨 **Creative & Interdisciplinary Work**:
    - NFT展覽資訊
    - 畢業專題獎項
-7. 💻 **Technical Portfolio**:
+8. 💻 **Technical Portfolio**:
    - GitHub成就截圖 (`Github-achivement-1.png`, `Github-achivement-2.png`)
    - 作品集網站連結卡
 
