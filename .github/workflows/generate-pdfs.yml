@@ -58,6 +58,7 @@ jobs:
           cache: 'pip'
       
       - name: 📦 Install System Dependencies
+        if: ${{ !cancelled() }}
         run: |
           # 安裝WeasyPrint所需的系統套件
           sudo apt-get update
@@ -76,19 +77,27 @@ jobs:
           echo "✅ 系統依賴安裝完成"
       
       - name: 📚 Install Python Dependencies
+        if: ${{ !cancelled() }}
         run: |
+          echo "📦 開始安裝Python依賴套件..."
           python -m pip install --upgrade pip
-          pip install -r requirements-pdf.txt
+          
+          echo "📋 安裝來自 requirements.txt 的套件..."
+          pip install -r requirements.txt
+          
           echo "✅ Python套件安裝完成"
       
       - name: 🔍 Validate Environment
+        if: ${{ !cancelled() }}
         run: |
           echo "🔧 驗證PDF生成環境..."
-          python -c "import weasyprint; print('✅ WeasyPrint OK')"
-          python -c "import reportlab; print('✅ ReportLab OK')"  
-          python -c "import PIL; print('✅ Pillow OK')"
-          python -c "import yaml; print('✅ PyYAML OK')"
-          python -c "import markdown; print('✅ Markdown OK')"
+          
+          echo "測試套件導入..."
+          python -c "import weasyprint; print('✅ WeasyPrint OK')" || echo "❌ WeasyPrint failed"
+          python -c "import reportlab; print('✅ ReportLab OK')" || echo "❌ ReportLab failed" 
+          python -c "import PIL; print('✅ Pillow OK')" || echo "❌ Pillow failed"
+          python -c "import yaml; print('✅ PyYAML OK')" || echo "❌ PyYAML failed"
+          python -c "import markdown; print('✅ Markdown OK')" || echo "❌ Markdown failed"
           
           echo "📂 檢查必要檔案..."
           ls -la my_profile.yml
@@ -126,6 +135,7 @@ jobs:
       
       - name: 🎯 Generate PDFs
         id: generate_pdfs
+        if: ${{ !cancelled() }}
         run: |
           echo "🚀 開始生成PDF文件..."
           
@@ -164,7 +174,7 @@ jobs:
           fi
       
       - name: 📊 PDF Quality Check
-        if: steps.generate_pdfs.outputs.pdf_generated == 'true'
+        if: ${{ !cancelled() && steps.generate_pdfs.outputs.pdf_generated == 'true' }}
         run: |
           echo "🔍 執行PDF品質檢查..."
           
@@ -196,7 +206,7 @@ jobs:
           done
       
       - name: 📤 Upload PDF Artifacts
-        if: steps.generate_pdfs.outputs.pdf_generated == 'true'
+        if: ${{ !cancelled() && steps.generate_pdfs.outputs.pdf_generated == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: application-pdfs-${{ github.run_number }}
