@@ -202,6 +202,97 @@ pipeline:
                       else
                         echo "final_applications directory not found"
                       fi
+              
+              - step:
+                  type: Run
+                  name: Generate Application PDFs
+                  identifier: generate_pdfs
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "🎯 開始生成申請PDF文件..."
+                      
+                      # 安裝PDF生成依賴
+                      echo "📦 安裝PDF生成依賴..."
+                      apt-get update -qq
+                      apt-get install -y \
+                        libpango-1.0-0 \
+                        libharfbuzz0b \
+                        libpangoft2-1.0-0 \
+                        libfontconfig1 \
+                        libcairo2 \
+                        libgdk-pixbuf2.0-0 \
+                        shared-mime-info \
+                        fonts-dejavu-core \
+                        fonts-liberation \
+                        fonts-noto-cjk \
+                        bc
+                      
+                      pip3 install \
+                        PyYAML>=6.0 \
+                        markdown>=3.4 \
+                        Pillow>=9.0.0 \
+                        weasyprint>=59.0 \
+                        reportlab>=4.0.0 \
+                        img2pdf>=0.4.4 \
+                        cssselect2>=0.7.0 \
+                        html5lib>=1.1 \
+                        tinycss2>=1.2.0 \
+                        python-dateutil>=2.8.0
+                      
+                      echo "✅ 依賴安裝完成"
+                      
+                      # 檢查PDF生成腳本
+                      if [ ! -f "build_scripts/generate_pdfs.py" ]; then
+                        echo "❌ 找不到PDF生成腳本"
+                        echo "跳過PDF生成步驟"
+                        exit 0
+                      fi
+                      
+                      # 建立PDF輸出目錄
+                      mkdir -p application_pdfs
+                      
+                      # 執行PDF生成
+                      echo "📄 生成申請PDF文件..."
+                      python3 build_scripts/generate_pdfs.py \
+                        --type all \
+                        --profile my_profile.yml \
+                        --output application_pdfs
+                      
+                      # 檢查生成結果
+                      if [ -d "application_pdfs" ] && [ "$(ls -A application_pdfs 2>/dev/null)" ]; then
+                        echo "✅ PDF生成成功！"
+                        echo ""
+                        echo "📁 生成的PDF文件:"
+                        ls -lh application_pdfs/
+                        
+                        # 品質檢查
+                        echo ""
+                        echo "🔍 PDF品質檢查..."
+                        for pdf in application_pdfs/*.pdf; do
+                          if [ -f "$pdf" ]; then
+                            filename=$(basename "$pdf")
+                            size=$(stat --format="%s" "$pdf")
+                            size_mb=$(echo "scale=2; $size / 1024 / 1024" | bc -l)
+                            
+                            echo "📄 $filename: ${size_mb}MB"
+                            
+                            # 檢查大小限制
+                            if [[ "$pdf" == *"CV"* ]] && (( $(echo "$size_mb > 4" | bc -l) )); then
+                              echo "   ⚠️ 超過CV檔案4MB限制"
+                            elif [[ "$pdf" != *"CV"* ]] && (( $(echo "$size_mb > 10" | bc -l) )); then
+                              echo "   ⚠️ 超過10MB檔案限制"
+                            else
+                              echo "   ✅ 檔案大小符合要求"
+                            fi
+                          fi
+                        done
+                        
+                        echo "PDF_GENERATED=true" >> $HARNESS_ENV
+                      else
+                        echo "⚠️ PDF生成失敗或沒有生成檔案"
+                        echo "PDF_GENERATED=false" >> $HARNESS_ENV
+                      fi
               - step:
                   type: Run
                   name: Commit and Push Results to GitHub
@@ -251,15 +342,38 @@ pipeline:
                       echo "Searching for generated markdown files..."
                       find . -name "*.md" -path "*/final_applications/*" -type f 2>/dev/null | head -10 || echo "No markdown files found in final_applications"
 
+                      # Search for generated PDF files
+                      echo ""
+                      echo "Searching for generated PDF files..."
+                      find . -name "*.pdf" -path "*/application_pdfs/*" -type f 2>/dev/null | head -10 || echo "No PDF files found in application_pdfs"
+
+                      # Configure git
+                      git config user.email "harness-pipeline@dennisleehappy.org"
+                      git config user.name "Harness Pipeline Bot"
+
+                      files_to_commit=false
+
                       # Check if there are files to commit
                       if [ -d "final_applications" ] && [ "$(ls -A final_applications 2>/dev/null)" ]; then
                         echo ""
                         echo "Found final_applications directory with content!"
-                        echo "Files to commit:"
+                        echo "Markdown files to commit:"
                         find final_applications -type f | head -20
-                        
+                        files_to_commit=true
+                      fi
+
+                      # Check for PDF files to commit
+                      if [ -d "application_pdfs" ] && [ "$(ls -A application_pdfs 2>/dev/null)" ]; then
+                        echo ""
+                        echo "Found application_pdfs directory with content!"
+                        echo "PDF files to commit:"
+                        find application_pdfs -type f | head -10
+                        files_to_commit=true
+                      fi
+
+                      if [ "$files_to_commit" == "true" ]; then
                         # Add all generated files
-                        git add final_applications/
+                        git add final_applications/ application_pdfs/ 2>/dev/null || true
                         
                         # Check if there are changes
                         if git diff --staged --quiet; then
@@ -268,29 +382,39 @@ pipeline:
                         else
                           # Commit with timestamp
                           TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
-                          git commit -m "feat: Generate exchange application documents - $TIMESTAMP" -m "Generated by Harness Pipeline" -m "Pipeline ID: <+pipeline.sequenceId>" -m "Execution Time: <+pipeline.startTs>" -m "Documents: Eligibility report, Dashboard, Study plans and CVs"
+                          # 檢查生成了什麼類型的文件
+                          md_count=$(find final_applications -name "*.md" 2>/dev/null | wc -l || echo "0")
+                          pdf_count=$(find application_pdfs -name "*.pdf" 2>/dev/null | wc -l || echo "0")
                           
-                          # Push to GitHub (if token configured)
-                          if [ -n "$GITHUB_TOKEN" ]; then
-                            echo ""
-                            echo "Pushing to GitHub..."
-                            git push origin HEAD:<+codebase.branch>
-                            
-                            echo ""
-                            echo "✅ Successfully pushed generated documents to GitHub!"
-                            echo "Branch: <+codebase.branch>"
-                            echo "Commit: $(git rev-parse --short HEAD)"
-                          else
-                            echo ""
-                            echo "⚠️ Skipping push - no GitHub token configured"
-                            echo "Files are committed locally and can be downloaded from Pipeline artifacts"
-                          fi
+                          git commit -m "feat: Generate exchange application documents and PDFs - $TIMESTAMP
+                          
+                          Generated by Harness Pipeline
+                          Pipeline ID: <+pipeline.sequenceId>
+                          Execution Time: <+pipeline.startTs>
+                          
+                          Documents generated:
+                          - Markdown documents: $md_count files
+                          - PDF documents: $pdf_count files
+                          - Eligibility report and dashboard
+                          - Study plans and CVs for qualified universities
+                          - Application-ready PDF files for ISCTE submission"
+                          
+                          # Push to GitHub
+                          echo ""
+                          echo "Pushing to GitHub..."
+                          git push origin HEAD:<+codebase.branch>
+                          
+                          echo ""
+                          echo "Successfully pushed generated documents to GitHub!"
+                          echo "Branch: <+codebase.branch>"
+                          echo "Commit: $(git rev-parse --short HEAD)"
                         fi
                       else
                         echo ""
-                        echo "⚠️ No final_applications directory found or directory is empty"
-                        echo "This means the document generation step may have failed"
-                        echo "Creating execution log..."
+                        echo "WARNING: No files found to commit"
+                        echo "Neither final_applications nor application_pdfs directories contain files"
+                        echo "This means the document and PDF generation steps may have failed"
+                        echo "Please check the previous pipeline steps for errors"
                         
                         mkdir -p pipeline_logs
                         echo "Pipeline Execution Summary" > pipeline_logs/execution_summary.txt
@@ -317,17 +441,32 @@ pipeline:
                       echo "Exchange Application Pipeline Completed!"
                       echo "=========================================="
                       echo "Generated: $(date)"
-                      echo "Location: final_applications/"
                       echo "GitHub Branch: <+codebase.branch>"
                       echo ""
-                      echo "Generated files have been committed and pushed to GitHub!"
+                      echo "📁 Generated Files:"
+                      if [ -d "final_applications" ] && [ "$(ls -A final_applications 2>/dev/null)" ]; then
+                        md_count=$(find final_applications -name "*.md" 2>/dev/null | wc -l)
+                        echo "  • Markdown documents: $md_count files (final_applications/)"
+                      fi
+                      if [ -d "application_pdfs" ] && [ "$(ls -A application_pdfs 2>/dev/null)" ]; then
+                        pdf_count=$(find application_pdfs -name "*.pdf" 2>/dev/null | wc -l)
+                        echo "  • PDF documents: $pdf_count files (application_pdfs/)"
+                      fi
+                      echo ""
+                      echo "✅ All files have been committed and pushed to GitHub!"
+                      echo ""
+                      echo "📋 Ready for ISCTE Application:"
+                      echo "  • CV (PDF, max 4MB)"
+                      echo "  • Transcript of Records (PDF, max 10MB)"
+                      echo "  • Other Documents (PDF, max 10MB)"
                       echo ""
                       echo "Next steps:"
                       echo "1. Pull the latest changes from GitHub"
-                      echo "2. Review generated documents in final_applications/"
-                      echo "3. Check application deadlines"
-                      echo "4. Prepare English test scores"
-                      echo "5. Contact recommenders"
+                      echo "2. Review documents in final_applications/ and application_pdfs/"
+                      echo "3. Verify PDF file sizes and content"
+                      echo "4. Submit PDFs to ISCTE application portal"
+                      echo "5. Check application deadlines"
+                      echo "6. Prepare additional required documents"
                       echo "=========================================="
   variables:
     - name: profile_file
