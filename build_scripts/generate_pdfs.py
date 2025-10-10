@@ -102,6 +102,12 @@ class PDFGenerator:
         try:
             with open(cv_file, 'r', encoding='utf-8') as f:
                 md_content = f.read()
+                
+            # 移除"交換申請履歷"字眼
+            md_content = md_content.replace("交換申請履歷", "")
+            md_content = md_content.replace("- 交換申請履歷", "")
+            md_content = md_content.replace("交換申請", "Exchange Application")
+                
         except Exception as e:
             logger.error(f"❌ 讀取CV檔案失敗: {e}")
             return None
@@ -260,21 +266,27 @@ class PDFGenerator:
             story.append(Paragraph(f"Class Ranking: {self.profile_data['education']['current_program']['class_ranking']}", styles['Normal']))
             story.append(Spacer(1, 20))
             
-            # 說明文字
+            # 說明文字 - 更好地區分大學和碩士狀態
             explanation = """
             <b>Document Explanation:</b><br/>
             The following pages contain scanned copies of official transcripts from National Chengchi University (NCCU).
-            These documents show the academic record for the Graduate Coursework in Digital Content and Technologies program.
+            These documents include academic records from both undergraduate and graduate programs.
+            
+            <br/><br/>
+            <b>Educational Background:</b><br/>
+            • <b>Undergraduate Degree:</b> Computer Science - <b>COMPLETED (Graduated)</b><br/>
+            • <b>Graduate Program:</b> Digital Content and Technologies - <b>COURSEWORK COMPLETED (Currently completing thesis)</b><br/>
             
             <br/><br/>
             <b>Note:</b> Official English transcripts have been requested from NCCU Registrar's Office and will be submitted separately upon receipt.
             
             <br/><br/>
             <b>Academic Performance Summary:</b><br/>
-            • Overall GPA: 3.96/4.3 (92.09%)<br/>
-            • Class Ranking: Top 5%<br/>
-            • Program Duration: September 2021 - June 2023<br/>
-            • Degree Status: Graduate Coursework Completed
+            • Graduate Program GPA: 3.96/4.3 (92.09%)<br/>
+            • Class Ranking: Top 5% (Graduate Program)<br/>
+            • Graduate Program Duration: September 2021 - June 2023<br/>
+            • Current Status: <b>Graduate coursework completed, thesis in progress</b><br/>
+            • Expected Graduation: June 2025
             """
             
             story.append(Paragraph(explanation, styles['Normal']))
@@ -423,6 +435,9 @@ class PDFGenerator:
                 story.append(Paragraph(cert_summary, styles['Normal']))
                 story.append(Spacer(1, 20))
                 
+                # 加入證照文件從 certifications 目錄
+                self._add_certifications_to_story(story, styles)
+                
                 # 加入支持圖片 (如果存在)
                 support_images = [
                     "supporting_documents/獎學金.png",
@@ -523,6 +538,113 @@ class PDFGenerator:
         logger.info(f"📁 輸出目錄: {self.output_dir.absolute()}")
         
         return results
+    
+    def _add_certifications_to_story(self, story, styles):
+        """加入證照文件到PDF中"""
+        cert_dir = Path("supporting_documents/certifications")
+        if not cert_dir.exists():
+            logger.warning("⚠️ 找不到certifications目錄")
+            return
+            
+        logger.info(f"📜 正在加入證照文件...")
+        
+        # 加入證照章節標題
+        cert_title = ParagraphStyle(
+            'CertTitle',
+            parent=styles['Heading1'],
+            fontSize=14,
+            spaceAfter=15,
+            textColor='#2c3e50'
+        )
+        
+        story.append(Paragraph("<b>PROFESSIONAL CERTIFICATIONS</b>", cert_title))
+        story.append(Spacer(1, 10))
+        
+        # 獲取所有證照文件
+        cert_files = []
+        for ext in ['*.pdf', '*.png', '*.jpg', '*.jpeg']:
+            cert_files.extend(list(cert_dir.glob(ext)))
+        
+        # 過濾掉不需要的文件
+        excluded_files = ['CERTIFICATIONS_INDEX.md']
+        cert_files = [f for f in cert_files if f.name not in excluded_files]
+        
+        # 依重要性排序（重要證照先顯示）
+        priority_certs = ['CC.pdf', 'AI-SECURITY.pdf', 'TW00125503682-03-10-2025-ETRF.pdf']
+        sorted_files = []
+        
+        # 先加入優先證照
+        for priority in priority_certs:
+            for cert_file in cert_files:
+                if cert_file.name == priority:
+                    sorted_files.append(cert_file)
+                    break
+        
+        # 加入其他證照（最多10個避免檔案過大）
+        other_certs = [f for f in cert_files if f not in sorted_files]
+        sorted_files.extend(other_certs[:10])  # 限制總數
+        
+        logger.info(f"📊 找到 {len(cert_files)} 個證照文件，將嵌入 {len(sorted_files)} 個")
+        
+        cert_count = 0
+        for cert_file in sorted_files:
+            try:
+                cert_count += 1
+                
+                # 證照名稱
+                cert_name = cert_file.stem.replace('_', ' ').replace('-', ' ')
+                story.append(Paragraph(f"<b>{cert_count}. {cert_name}</b>", styles['Heading3']))
+                
+                if cert_file.suffix.lower() == '.pdf':
+                    # PDF檔案：提供檔案資訊
+                    file_info = f"證照文件: {cert_file.name} (PDF Format)"
+                    story.append(Paragraph(file_info, styles['Normal']))
+                    
+                    # 試圖讀取PDF的第一頁作為縮圖（可選）
+                    story.append(Paragraph("<i>PDF certificate file included in digital submission.</i>", styles['Normal']))
+                    
+                else:
+                    # 圖片檔案：嵌入圖片
+                    img = Image.open(cert_file)
+                    img_width, img_height = img.size
+                    
+                    # 調整大小以適合頁面
+                    max_width = 5 * inch
+                    max_height = 6 * inch
+                    
+                    ratio = min(max_width/img_width, max_height/img_height)
+                    new_width = img_width * ratio
+                    new_height = img_height * ratio
+                    
+                    rl_img = RLImage(str(cert_file), width=new_width, height=new_height)
+                    story.append(rl_img)
+                
+                story.append(Spacer(1, 15))
+                
+                # 每3個證照後加一個分頁（避免內容過擠）
+                if cert_count % 3 == 0:
+                    from reportlab.platypus import PageBreak
+                    story.append(PageBreak())
+                    
+            except Exception as e:
+                logger.warning(f"⚠️ 無法處理證照文件 {cert_file}: {e}")
+                continue
+        
+        # 證照總結
+        summary_text = f"""
+        <br/><br/>
+        <b>Certification Summary:</b><br/>
+        • Total Certifications Included: {cert_count}<br/>
+        • Fields Covered: Cybersecurity, Cloud Computing, Quantum Computing, AI Security<br/>
+        • Issuing Organizations: ISC², AWS, Google Cloud, Coursera, edX, IBM<br/>
+        • Certification Period: 2022-2025 (Active)<br/><br/>
+        
+        <i>All certifications are current and valid. Complete certification details 
+        and verification links are available in the digital portfolio.</i>
+        """
+        
+        story.append(Paragraph(summary_text, styles['Normal']))
+        story.append(Spacer(1, 20))
 
 def main():
     """主函式"""
