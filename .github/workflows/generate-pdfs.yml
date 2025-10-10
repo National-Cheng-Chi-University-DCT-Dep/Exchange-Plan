@@ -221,18 +221,23 @@ jobs:
           else
             # 建立提交
             TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S UTC')
-            COMMIT_MSG="🤖 Auto-generate: Application PDFs
-
-📅 Generated: $TIMESTAMP
-🔧 Workflow: ${{ github.workflow }}
-📋 Run ID: ${{ github.run_id }}
-📊 Files: ${{ steps.generate_pdfs.outputs.pdf_count }} PDFs
-📏 Total Size: ${{ steps.generate_pdfs.outputs.total_size }}
-
-Generated PDFs:
-$(ls application_pdfs/ | sed 's/^/- /')"
-
-            git commit -m "$COMMIT_MSG"
+            
+            # 建立提交訊息
+            cat > commit_message.txt << EOF
+          🤖 Auto-generate: Application PDFs
+          
+          📅 Generated: $TIMESTAMP
+          🔧 Workflow: ${{ github.workflow }}
+          📋 Run ID: ${{ github.run_id }}
+          📊 Files: ${{ steps.generate_pdfs.outputs.pdf_count }} PDFs
+          📏 Total Size: ${{ steps.generate_pdfs.outputs.total_size }}
+          
+          Generated PDFs:
+          $(ls application_pdfs/ | sed 's/^/- /' 2>/dev/null || echo '- No PDFs found')
+          EOF
+            
+            git commit -F commit_message.txt
+            rm commit_message.txt
             
             # 推送到repository
             git push origin ${{ github.ref_name }}
